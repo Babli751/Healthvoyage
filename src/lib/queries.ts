@@ -149,3 +149,82 @@ export function getCountries() {
 export function getTreatments() {
   return query<Treatment>(`SELECT * FROM treatments ORDER BY name ASC`);
 }
+
+// --- Admin writes ----------------------------------------------------------
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+export interface SanatoriumInput {
+  name: string;
+  city: string;
+  stars: number | null;
+  summary: string;
+  description: string;
+  image: string | null;
+  countryId: number;
+  treatmentIds: number[];
+}
+
+async function setTreatments(sanatoriumId: number, treatmentIds: number[]) {
+  await query(`DELETE FROM sanatorium_treatments WHERE sanatorium_id = $1`, [sanatoriumId]);
+  for (const tid of treatmentIds) {
+    await query(
+      `INSERT INTO sanatorium_treatments (sanatorium_id, treatment_id) VALUES ($1, $2)
+       ON CONFLICT DO NOTHING`,
+      [sanatoriumId, tid]
+    );
+  }
+}
+
+export async function createSanatorium(input: SanatoriumInput): Promise<number> {
+  const base = slugify(`${input.name}-${input.city}`);
+  // Ensure unique slug.
+  let slug = base;
+  let n = 2;
+  while (await queryOne(`SELECT 1 FROM sanatoriums WHERE slug = $1`, [slug])) {
+    slug = `${base}-${n++}`;
+  }
+  const row = await queryOne<{ id: number }>(
+    `INSERT INTO sanatoriums (name, slug, city, stars, summary, description, image, country_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
+    [input.name, slug, input.city, input.stars, input.summary, input.description, input.image, input.countryId]
+  );
+  const id = row!.id;
+  await setTreatments(id, input.treatmentIds);
+  return id;
+}
+
+export async function updateSanatorium(id: number, input: SanatoriumInput): Promise<void> {
+  await query(
+    `UPDATE sanatoriums
+     SET name=$1, city=$2, stars=$3, summary=$4, description=$5, image=$6, country_id=$7
+     WHERE id=$8`,
+    [input.name, input.city, input.stars, input.summary, input.description, input.image, input.countryId, id]
+  );
+  await setTreatments(id, input.treatmentIds);
+}
+
+export async function deleteSanatorium(id: number): Promise<void> {
+  await query(`DELETE FROM sanatoriums WHERE id = $1`, [id]);
+}
+
+export async function getSanatoriumById(id: number) {
+  const row = await queryOne<SanatoriumFull>(`${SANATORIUM_SELECT} WHERE s.id = $1`, [id]);
+  if (!row) return null;
+  const ids = await query<{ treatment_id: number }>(
+    `SELECT treatment_id FROM sanatorium_treatments WHERE sanatorium_id = $1`,
+    [id]
+  );
+  return { ...row, treatment_ids: ids.map((r) => r.treatment_id) };
+}
+
+// Full admin list (all sanatoriums, lightweight).
+export function getAllSanatoriumsAdmin() {
+  return query<SanatoriumFull>(`${SANATORIUM_SELECT} ORDER BY c.name ASC, s.name ASC`);
+}
