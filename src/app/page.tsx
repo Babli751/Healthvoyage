@@ -99,6 +99,7 @@ export default async function Home() {
                 flag={s.country_flag}
                 stars={s.stars}
                 summary={s.summary}
+                image={s.image}
                 treatments={s.treatments}
               />
             ))}

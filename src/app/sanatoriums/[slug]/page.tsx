@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getSanatoriumBySlug, getRelatedSanatoriums } from "@/lib/queries";
+import { SanatoriumCard } from "@/components/SanatoriumCard";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +20,10 @@ export default async function SanatoriumDetail({
 
   return (
     <main>
-      <section className="detail-hero">
-        <div className="container">
+      <section className="detail-cover">
+        <Image src={s.image ?? "/logo.jpg"} alt={s.name} fill priority sizes="100vw" style={{ objectFit: "cover" }} />
+        <div className="detail-cover-shade" />
+        <div className="container detail-cover-inner">
           <div className="breadcrumb">
             <Link href="/">Home</Link> /{" "}
             <Link href="/sanatoriums">Sanatoriums</Link> /{" "}
@@ -27,7 +31,7 @@ export default async function SanatoriumDetail({
           </div>
           <h1>{s.name}</h1>
           <div className="meta">
-            {s.stars ? <span className="stars" style={{ color: "var(--star)" }}>{"★".repeat(s.stars)}</span> : null}
+            {s.stars ? <span className="cover-stars">{"★".repeat(s.stars)}</span> : null}
             <span>{s.country_flag} {s.city}, {s.country_name}</span>
           </div>
         </div>
@@ -66,14 +70,18 @@ export default async function SanatoriumDetail({
               <h3 style={{ marginTop: 44 }}>More in {s.country_name}</h3>
               <div className="san-grid">
                 {related.map((r) => (
-                  <Link key={r.id} href={`/sanatoriums/${r.slug}`} className="san-card">
-                    <div className="top">
-                      <h3>{r.name}</h3>
-                      {r.stars ? <span className="stars">{"★".repeat(r.stars)}</span> : null}
-                    </div>
-                    <div className="loc">{r.country_flag} {r.city}</div>
-                    <p className="sum">{r.summary}</p>
-                  </Link>
+                  <SanatoriumCard
+                    key={r.id}
+                    slug={r.slug}
+                    name={r.name}
+                    city={r.city}
+                    country={r.country_name}
+                    flag={r.country_flag}
+                    stars={r.stars}
+                    summary={r.summary}
+                    image={r.image}
+                    treatments={r.treatments}
+                  />
                 ))}
               </div>
             </>

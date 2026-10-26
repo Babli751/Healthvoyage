@@ -28,6 +28,7 @@ CREATE TABLE sanatoriums (
   stars       INT,
   summary     TEXT NOT NULL,
   description TEXT NOT NULL,
+  image       TEXT, -- /img/<pexels-id>.jpg
   country_id  INT NOT NULL REFERENCES countries(id) ON DELETE CASCADE,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );

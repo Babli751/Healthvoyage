@@ -22,6 +22,7 @@ export interface Sanatorium {
   stars: number | null;
   summary: string;
   description: string;
+  image: string | null;
   country_id: number;
 }
 
@@ -35,7 +36,7 @@ export interface SanatoriumFull extends Sanatorium {
 
 // Aggregate treatments[] via a correlated json subquery so each row is complete.
 const SANATORIUM_SELECT = `
-  SELECT s.id, s.name, s.slug, s.city, s.stars, s.summary, s.description, s.country_id,
+  SELECT s.id, s.name, s.slug, s.city, s.stars, s.summary, s.description, s.image, s.country_id,
          c.name AS country_name, c.slug AS country_slug, c.flag AS country_flag,
          COALESCE(
            (SELECT json_agg(json_build_object('name', t.name, 'slug', t.slug) ORDER BY t.name)
