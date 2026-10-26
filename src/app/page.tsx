@@ -54,6 +54,36 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="trust-bar">
+        <div className="container trust-bar-inner">
+          <div className="trust-item"><strong>7</strong> partner destinations</div>
+          <div className="trust-item"><strong>{totalSan}</strong> vetted health resorts</div>
+          <div className="trust-item"><strong>{totalTreat}</strong> treatment profiles</div>
+          <div className="trust-item"><strong>Free</strong> consultation &amp; coordination</div>
+        </div>
+      </section>
+
+      <section className="section" id="how">
+        <div className="container">
+          <h2>How it works</h2>
+          <p className="sub">From first question to recovery — we handle the journey.</p>
+          <div className="steps">
+            {[
+              { n: 1, t: "Explore", d: "Browse resorts by destination or treatment profile and shortlist what fits your condition." },
+              { n: 2, t: "Consult", d: "Send an inquiry. Our coordinators confirm suitability, programs and pricing with the resort." },
+              { n: 3, t: "Plan", d: "We arrange your treatment program, dates, transfers and any documents you need." },
+              { n: 4, t: "Heal", d: "Travel and receive care, with support throughout your stay and after you return home." },
+            ].map((s) => (
+              <div className="step" key={s.n}>
+                <div className="step-n">{s.n}</div>
+                <h3>{s.t}</h3>
+                <p>{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="section" id="countries">
         <div className="container">
           <h2>Browse by destination</h2>
@@ -106,6 +136,27 @@ export default async function Home() {
           </div>
           <div style={{ marginTop: 28 }}>
             <Link href="/sanatoriums" className="btn">View all resorts</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section why" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <h2>Why patients choose HealthVoyage</h2>
+          <p className="sub">A single point of contact for treatment and recovery abroad.</p>
+          <div className="why-grid">
+            {[
+              { icon: "🩺", t: "Curated resorts", d: "Each sanatorium is listed with its real treatment profile — balneology, Naftalan, rehabilitation and more — so you match care to your condition." },
+              { icon: "🌍", t: "International support", d: "English-speaking coordination, help with travel and transfers, and guidance before, during and after your stay." },
+              { icon: "💬", t: "Free consultation", d: "Tell us your needs and we handle the back-and-forth with resorts. No fee to use the service." },
+              { icon: "🤝", t: "Real partnerships", d: "We work directly with resorts and sanatoriums to confirm availability, programs and transparent pricing." },
+            ].map((w) => (
+              <div className="why-card" key={w.t}>
+                <div className="why-icon">{w.icon}</div>
+                <h3>{w.t}</h3>
+                <p>{w.d}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -222,3 +222,24 @@ a { color: inherit; text-decoration: none; }
   .form-grid { grid-template-columns: 1fr; }
   .admin-table { font-size: 13px; display: block; overflow-x: auto; }
 }
+
+/* ---------------- Home: trust bar / steps / why ---------------- */
+.trust-bar { background: var(--surface); border-bottom: 1px solid var(--border); }
+.trust-bar-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding: 20px 0; }
+.trust-item { font-size: 15px; color: var(--muted); }
+.trust-item strong { color: var(--brand); font-size: 20px; font-weight: 800; margin-right: 6px; }
+
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+.step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); position: relative; }
+.step-n {
+  width: 38px; height: 38px; border-radius: 50%; background: var(--brand); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; margin-bottom: 14px;
+}
+.step h3 { font-size: 18px; margin-bottom: 6px; }
+.step p { font-size: 14px; color: var(--muted); }
+
+.why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+.why-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow); }
+.why-icon { font-size: 30px; margin-bottom: 12px; }
+.why-card h3 { font-size: 18px; margin-bottom: 8px; }
+.why-card p { font-size: 14px; color: var(--muted); }
