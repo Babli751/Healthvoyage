@@ -313,3 +313,23 @@ a { color: inherit; text-decoration: none; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }
 }
+
+/* ---------------- Destination cards (image) ---------------- */
+.dest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.dest-card { display: block; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform .15s, box-shadow .15s; }
+.dest-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(15,35,59,.12); }
+.dest-card:hover .dest-card-img img { transform: scale(1.05); }
+.dest-card-img { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; }
+.dest-card-img img { transition: transform .4s ease; }
+.dest-card-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,30,60,0) 35%, rgba(10,30,60,.72) 100%); }
+.dest-card-caption { position: absolute; left: 16px; bottom: 14px; z-index: 1; display: flex; align-items: center; gap: 9px; color: #fff; }
+.dest-flag { font-size: 24px; }
+.dest-name { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; text-shadow: 0 2px 10px rgba(0,0,0,.4); }
+.dest-card-foot { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; font-size: 14px; color: var(--muted); font-weight: 500; }
+.dest-card:hover .dest-card-foot { color: var(--brand); }
+.dest-arrow { font-size: 17px; }
+
+/* Destination detail hero with cover */
+.dest-hero { position: relative; min-height: 300px; display: flex; align-items: flex-end; overflow: hidden; }
+.dest-hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,30,60,.35) 0%, rgba(10,30,60,.82) 100%); }
+.dest-hero-inner { position: relative; z-index: 1; color: #fff; padding: 56px 0 30px; }

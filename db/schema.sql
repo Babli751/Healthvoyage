@@ -11,7 +11,8 @@ CREATE TABLE countries (
   name  TEXT NOT NULL UNIQUE,
   slug  TEXT NOT NULL UNIQUE,
   flag  TEXT,
-  blurb TEXT
+  blurb TEXT,
+  cover TEXT -- /countries/<slug>.jpg
 );
 
 CREATE TABLE treatments (

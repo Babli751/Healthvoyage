@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SanatoriumCard } from "@/components/SanatoriumCard";
+import { DestinationCard } from "@/components/DestinationCard";
 import {
   getCountriesWithCounts,
   getTreatmentsWithCounts,
@@ -88,13 +89,9 @@ export default async function Home() {
         <div className="container">
           <h2>Browse by destination</h2>
           <p className="sub">Choose a country to explore its sanatoriums and resorts.</p>
-          <div className="country-grid">
+          <div className="dest-grid">
             {countries.map((c) => (
-              <Link href={`/destinations/${c.slug}`} className="country-card" key={c.id}>
-                <div className="flag">{c.flag}</div>
-                <h3>{c.name}</h3>
-                <div className="count">{c.count} resorts →</div>
-              </Link>
+              <DestinationCard key={c.id} slug={c.slug} name={c.name} flag={c.flag} cover={c.cover} count={c.count} />
             ))}
           </div>
         </div>

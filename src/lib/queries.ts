@@ -6,6 +6,7 @@ export interface Country {
   slug: string;
   flag: string | null;
   blurb: string | null;
+  cover: string | null;
 }
 
 export function getAllCountriesForStatic() {

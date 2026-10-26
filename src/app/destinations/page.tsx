@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getCountriesWithCounts } from "@/lib/queries";
+import { DestinationCard } from "@/components/DestinationCard";
 
 export const dynamic = "force-dynamic";
 
@@ -23,13 +23,9 @@ export default async function DestinationsPage() {
 
       <section className="section">
         <div className="container">
-          <div className="country-grid">
+          <div className="dest-grid">
             {countries.map((c) => (
-              <Link href={`/destinations/${c.slug}`} className="country-card" key={c.id}>
-                <div className="flag">{c.flag}</div>
-                <h3>{c.name}</h3>
-                <div className="count">{c.count} resorts →</div>
-              </Link>
+              <DestinationCard key={c.id} slug={c.slug} name={c.name} flag={c.flag} cover={c.cover} count={c.count} />
             ))}
           </div>
         </div>

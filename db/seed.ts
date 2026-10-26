@@ -263,9 +263,10 @@ async function main() {
     const assignImage = makeImageAssigner();
     let sanatoriumCount = 0;
     for (const c of DATA) {
+      const countrySlug = slugify(c.name);
       const { rows: cr } = await client.query<{ id: number }>(
-        "INSERT INTO countries (name, slug, flag, blurb) VALUES ($1, $2, $3, $4) RETURNING id",
-        [c.name, slugify(c.name), c.flag, c.blurb]
+        "INSERT INTO countries (name, slug, flag, blurb, cover) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+        [c.name, countrySlug, c.flag, c.blurb, `/countries/${countrySlug}.jpg`]
       );
       const countryId = cr[0].id;
 

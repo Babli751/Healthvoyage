@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getCountryBySlug, searchSanatoriums } from "@/lib/queries";
 import { SanatoriumCard } from "@/components/SanatoriumCard";
@@ -33,14 +34,16 @@ export default async function DestinationPage({
 
   return (
     <main>
-      <section className="page-hero">
-        <div className="container">
+      <section className="dest-hero">
+        <Image src={country.cover ?? "/logo.jpg"} alt={country.name} fill priority sizes="100vw" style={{ objectFit: "cover" }} />
+        <div className="dest-hero-shade" />
+        <div className="container dest-hero-inner">
           <div className="breadcrumb" style={{ color: "rgba(255,255,255,.82)" }}>
             <Link href="/" style={{ color: "rgba(255,255,255,.92)" }}>Home</Link> /{" "}
             <Link href="/destinations" style={{ color: "rgba(255,255,255,.92)" }}>Destinations</Link> / {country.name}
           </div>
           <h1>{country.flag} {country.name}</h1>
-          {country.blurb && <p>{country.blurb}</p>}
+          {country.blurb && <p style={{ maxWidth: 640, opacity: .95, marginTop: 10 }}>{country.blurb}</p>}
         </div>
       </section>
 
