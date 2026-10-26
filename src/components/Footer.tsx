@@ -6,7 +6,10 @@ export function Footer() {
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
-          <Image src="/logo-trim.jpg" alt="HealthVoyage" width={90} height={125} className="footer-logo" />
+          <div className="footer-logo-row">
+            <Image src="/logo-icon.jpg" alt="" width={100} height={94} className="footer-logo-icon" />
+            <span className="footer-logo-text">Health<span>Voyage</span></span>
+          </div>
           <p>Medical tourism &amp; sanatorium booking — clinics, hospitals and health resorts across the region.</p>
         </div>
         <div className="footer-col">
