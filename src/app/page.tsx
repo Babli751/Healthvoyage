@@ -24,21 +24,38 @@ export default async function Home() {
   return (
     <main>
       <section className="hero">
-        <div className="container">
+        <div className="hero-bg" aria-hidden="true" />
+        <div className="hero-overlay" aria-hidden="true" />
+        <div className="container hero-inner">
           <h1>World-class treatment and recovery, close to home.</h1>
           <p>
             HealthVoyage connects international patients with trusted clinics,
             hospitals and health resorts — from Naftalan oil therapy to thermal
             balneology and rehabilitation.
           </p>
-          <form className="searchbar" action="/sanatoriums">
-            <input
-              type="text"
-              name="q"
-              placeholder="Search by name, city, or treatment…"
-              aria-label="Search sanatoriums"
-            />
+
+          <form className="hero-search" action="/sanatoriums">
+            <div className="hero-search-field">
+              <label htmlFor="hs-treatment">What care are you looking for?</label>
+              <select id="hs-treatment" name="treatment" defaultValue="">
+                <option value="">Any treatment</option>
+                {treatments.map((t) => (
+                  <option key={t.id} value={t.slug}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="hero-search-field">
+              <label htmlFor="hs-country">Where would you like to go?</label>
+              <select id="hs-country" name="country" defaultValue="">
+                <option value="">Any destination</option>
+                {countries.map((c) => (
+                  <option key={c.id} value={c.slug}>{c.flag} {c.name}</option>
+                ))}
+              </select>
+            </div>
+            <button type="submit" className="hero-search-btn">Explore options</button>
           </form>
+
           <div className="stats">
             <div className="stat">
               <div className="n">{totalSan}</div>
