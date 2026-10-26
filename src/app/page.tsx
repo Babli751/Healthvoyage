@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SanatoriumCard } from "@/components/SanatoriumCard";
 import { DestinationCard } from "@/components/DestinationCard";
+import { TREATMENT_ICON } from "@/lib/treatmentInfo";
 import {
   getCountriesWithCounts,
   getTreatmentsWithCounts,
@@ -101,10 +102,12 @@ export default async function Home() {
         <div className="container">
           <h2>Treatment profiles</h2>
           <p className="sub">Find resorts specializing in your condition.</p>
-          <div className="filters">
+          <div className="treat-grid">
             {treatments.map((t) => (
-              <Link href={`/treatments/${t.slug}`} className="chip" key={t.id}>
-                {t.name} ({t.count})
+              <Link href={`/treatments/${t.slug}`} className="treat-tile" key={t.id}>
+                <span className="treat-icon">{TREATMENT_ICON[t.slug] ?? "🩺"}</span>
+                <span className="treat-name">{t.name}</span>
+                <span className="treat-count">{t.count} resorts</span>
               </Link>
             ))}
           </div>
