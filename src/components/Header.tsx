@@ -6,7 +6,8 @@ export function Header() {
     <header className="site-header">
       <div className="container inner">
         <Link href="/" className="logo" aria-label="HealthVoyage home">
-          <Image src="/logo.jpg" alt="HealthVoyage" width={132} height={132} priority className="logo-img" />
+          <Image src="/logo-icon.jpg" alt="" width={120} height={113} priority className="logo-icon" />
+          <span className="logo-text">Health<span>Voyage</span></span>
         </Link>
         <nav className="nav">
           <Link href="/sanatoriums">Sanatoriums</Link>
