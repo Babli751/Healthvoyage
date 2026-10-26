@@ -50,38 +50,58 @@ function slugify(s: string): string {
 }
 
 // Image pools by theme (Pexels IDs downloaded to /public/img/<id>.jpg).
-// A sanatorium's primary treatment tag picks a pool; its index rotates within it.
+// Each sanatorium gets a UNIQUE image: its treatment profile picks a pool, and
+// we consume images from that pool without repeating (falling back if drained).
 const IMG_POOLS: Record<string, string[]> = {
-  balneo: ["23322331", "39440977", "13230442", "28518909", "11132693"],
-  spa: ["9146381", "18120174", "19641818", "19666192", "6187418"],
-  naftalan: ["19641818", "9146381", "6187418", "18120174"],
-  rehab: ["29807423", "13538710", "20860622", "20860597", "14797757"],
-  musculoskeletal: ["13538710", "29807423", "20860597", "14797757", "20860622"],
-  halotherapy: ["13427457", "12125343", "17288260", "7717461"],
-  respiratory: ["13427457", "17288260", "12125343", "7717461"],
-  mountain: ["14504291", "39158659", "7942026", "6049600", "1740175"],
-  nature: ["36209536", "8765693", "1612351", "2259226", "27429700"],
-  seaside: ["12985227", "27566374", "29512917"],
-  luxury: ["14841129", "14011664", "5371683", "15227142", "31876128"],
+  thermal: ["23322331", "39440977", "13230442", "28518909", "11132693", "31138249", "18049906", "32963833", "28407597", "15083379", "7041600", "13245235", "7222178", "19666207"],
+  spa: ["9146381", "18120174", "19641818", "19666192", "6187418", "7365437", "3757640", "8298854", "26846554", "10610447", "19737856", "7222168", "19150538", "7233264", "20669197"],
+  rehab: ["29807423", "13538710", "20860622", "20860597", "14797757", "20860625", "5793792", "20860616", "4506160", "3248690", "5794054", "20860592", "5793917", "4506073", "20860588"],
+  salt: ["13427457", "12125343", "17288260", "7717461"],
+  mountain: ["14504291", "39158659", "7942026", "6049600", "1740175", "6634828", "35988767", "27769600", "39608040", "19627818"],
+  nature: ["36209536", "8765693", "1612351", "2259226", "27429700", "37729825", "32334284", "10613691", "7820689"],
+  seaside: ["12985227", "27566374", "29512917", "7560128", "38259971", "30973635", "27063422", "14012235"],
+  luxury: ["14841129", "14011664", "5371683", "15227142", "31876128", "12695271", "3011575", "8135492", "18285958", "6903157", "29239105", "8146330", "34496715", "31488380"],
 };
 
-// Deterministic image for a sanatorium: pick a themed pool, rotate by a hash.
-function imageFor(s: SanatoriumSeed, indexInCountry: number): string {
-  const tags = s.treatments;
-  let pool = "luxury";
-  if (tags.includes("halotherapy") || tags.includes("respiratory")) pool = "halotherapy";
-  else if (tags.includes("naftalan")) pool = "naftalan";
-  else if (tags.includes("balneo")) pool = "balneo";
-  else if (tags.includes("rehab") && tags.includes("musculoskeletal")) pool = "rehab";
-  else if (tags.includes("musculoskeletal")) pool = "musculoskeletal";
-  else if (tags.includes("spa")) pool = "spa";
-  // 5-star places with only spa/rehab lean luxury or nature/mountain for scenery
-  if (pool === "luxury" && (tags.includes("spa") || tags.includes("rehab"))) {
-    pool = indexInCountry % 2 === 0 ? "nature" : "mountain";
+function poolFor(tags: string[]): string {
+  if (tags.includes("halotherapy") || tags.includes("respiratory")) return "salt";
+  if (tags.includes("balneo")) return "thermal";
+  if (tags.includes("naftalan")) return "spa";
+  if (tags.includes("rehab") || tags.includes("musculoskeletal")) return "rehab";
+  if (tags.includes("spa")) return "spa";
+  return "luxury";
+}
+
+// Stateful unique assigner: tracks consumed ids across the whole dataset.
+function makeImageAssigner() {
+  const used = new Set<string>();
+  const cursors: Record<string, number> = {};
+  const order = ["luxury", "nature", "mountain", "spa", "thermal", "rehab", "seaside", "salt"];
+
+  function take(pool: string): string | null {
+    const ids = IMG_POOLS[pool] ?? [];
+    let i = cursors[pool] ?? 0;
+    while (i < ids.length) {
+      const id = ids[i++];
+      if (!used.has(id)) {
+        cursors[pool] = i;
+        used.add(id);
+        return id;
+      }
+    }
+    cursors[pool] = i;
+    return null;
   }
-  const ids = IMG_POOLS[pool];
-  const id = ids[indexInCountry % ids.length];
-  return `/img/${id}.jpg`;
+
+  return function assign(s: SanatoriumSeed): string {
+    const primary = poolFor(s.treatments);
+    // Try primary pool first, then any other pool, so every item is unique.
+    let id = take(primary);
+    if (!id) for (const p of order) { id = take(p); if (id) break; }
+    // Absolute fallback (shouldn't happen with 100+ images): reuse primary[0].
+    if (!id) id = IMG_POOLS[primary][0] ?? "14841129";
+    return `/img/${id}.jpg`;
+  };
 }
 
 interface SanatoriumSeed {
@@ -240,6 +260,7 @@ async function main() {
     }
     console.log(`  ${treatmentIds.size} treatments`);
 
+    const assignImage = makeImageAssigner();
     let sanatoriumCount = 0;
     for (const c of DATA) {
       const { rows: cr } = await client.query<{ id: number }>(
@@ -248,9 +269,8 @@ async function main() {
       );
       const countryId = cr[0].id;
 
-      let idx = 0;
       for (const s of c.sanatoriums) {
-        const image = imageFor(s, idx++);
+        const image = assignImage(s);
         const { rows: sr } = await client.query<{ id: number }>(
           `INSERT INTO sanatoriums (name, slug, city, stars, summary, description, image, country_id)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
