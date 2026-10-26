@@ -8,6 +8,10 @@ export interface Country {
   blurb: string | null;
 }
 
+export function getAllCountriesForStatic() {
+  return query<{ slug: string }>(`SELECT slug FROM countries`);
+}
+
 export interface Treatment {
   id: number;
   name: string;
@@ -227,4 +231,65 @@ export async function getSanatoriumById(id: number) {
 // Full admin list (all sanatoriums, lightweight).
 export function getAllSanatoriumsAdmin() {
   return query<SanatoriumFull>(`${SANATORIUM_SELECT} ORDER BY c.name ASC, s.name ASC`);
+}
+
+// --- Inquiries -------------------------------------------------------------
+
+export interface Inquiry {
+  id: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  country: string | null;
+  message: string;
+  sanatorium_id: number | null;
+  sanatorium_name: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface InquiryInput {
+  name: string;
+  email: string;
+  phone?: string | null;
+  country?: string | null;
+  message: string;
+  sanatoriumId?: number | null;
+  sanatoriumName?: string | null;
+}
+
+export async function createInquiry(input: InquiryInput): Promise<number> {
+  const row = await queryOne<{ id: number }>(
+    `INSERT INTO inquiries (name, email, phone, country, message, sanatorium_id, sanatorium_name)
+     VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+    [
+      input.name,
+      input.email,
+      input.phone ?? null,
+      input.country ?? null,
+      input.message,
+      input.sanatoriumId ?? null,
+      input.sanatoriumName ?? null,
+    ]
+  );
+  return row!.id;
+}
+
+export function getInquiries() {
+  return query<Inquiry>(`SELECT * FROM inquiries ORDER BY created_at DESC`);
+}
+
+export async function countNewInquiries(): Promise<number> {
+  const r = await queryOne<{ count: number }>(
+    `SELECT COUNT(*)::int AS count FROM inquiries WHERE status = 'new'`
+  );
+  return r?.count ?? 0;
+}
+
+export async function setInquiryStatus(id: number, status: string): Promise<void> {
+  await query(`UPDATE inquiries SET status = $1 WHERE id = $2`, [status, id]);
+}
+
+export async function deleteInquiry(id: number): Promise<void> {
+  await query(`DELETE FROM inquiries WHERE id = $1`, [id]);
 }

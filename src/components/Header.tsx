@@ -11,9 +11,10 @@ export function Header() {
         </Link>
         <nav className="nav">
           <Link href="/sanatoriums">Sanatoriums</Link>
-          <Link href="/#countries">Destinations</Link>
-          <Link href="/#treatments">Treatments</Link>
-          <Link href="/#contact">Contact</Link>
+          <Link href="/destinations">Destinations</Link>
+          <Link href="/treatments">Treatments</Link>
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
         </nav>
       </div>
     </header>

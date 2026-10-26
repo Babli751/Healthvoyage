@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getSanatoriumBySlug, getRelatedSanatoriums } from "@/lib/queries";
 import { SanatoriumCard } from "@/components/SanatoriumCard";
+import { InquiryForm } from "@/components/InquiryForm";
 
 export const dynamic = "force-dynamic";
 
@@ -50,19 +51,14 @@ export default async function SanatoriumDetail({
             ))}
           </div>
 
-          <div className="cta-box">
+          <div className="cta-box" id="inquire">
             <h3>Interested in {s.name}?</h3>
             <p>
               Request pricing, availability and a treatment program tailored to
               your condition. We coordinate consultation and transfer for
               international patients.
             </p>
-            <a
-              href={`mailto:info@healthvoyage.com?subject=Inquiry: ${encodeURIComponent(s.name)}`}
-              className="btn"
-            >
-              Send an inquiry
-            </a>
+            <InquiryForm sanatoriumId={s.id} sanatoriumName={s.name} compact />
           </div>
 
           {related.length > 0 && (

@@ -41,3 +41,19 @@ CREATE TABLE sanatorium_treatments (
   treatment_id  INT NOT NULL REFERENCES treatments(id) ON DELETE CASCADE,
   PRIMARY KEY (sanatorium_id, treatment_id)
 );
+
+-- Patient inquiries / leads
+CREATE TABLE IF NOT EXISTS inquiries (
+  id          SERIAL PRIMARY KEY,
+  name        TEXT NOT NULL,
+  email       TEXT NOT NULL,
+  phone       TEXT,
+  country     TEXT, -- patient's country
+  message     TEXT NOT NULL,
+  -- optional context: which sanatorium the inquiry came from
+  sanatorium_id   INT REFERENCES sanatoriums(id) ON DELETE SET NULL,
+  sanatorium_name TEXT,
+  status      TEXT NOT NULL DEFAULT 'new', -- new | contacted | closed
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status, created_at DESC);

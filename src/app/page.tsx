@@ -90,7 +90,7 @@ export default async function Home() {
           <p className="sub">Choose a country to explore its sanatoriums and resorts.</p>
           <div className="country-grid">
             {countries.map((c) => (
-              <Link href={`/sanatoriums?country=${c.slug}`} className="country-card" key={c.id}>
+              <Link href={`/destinations/${c.slug}`} className="country-card" key={c.id}>
                 <div className="flag">{c.flag}</div>
                 <h3>{c.name}</h3>
                 <div className="count">{c.count} resorts →</div>
@@ -106,7 +106,7 @@ export default async function Home() {
           <p className="sub">Find resorts specializing in your condition.</p>
           <div className="filters">
             {treatments.map((t) => (
-              <Link href={`/sanatoriums?treatment=${t.slug}`} className="chip" key={t.id}>
+              <Link href={`/treatments/${t.slug}`} className="chip" key={t.id}>
                 {t.name} ({t.count})
               </Link>
             ))}
@@ -169,7 +169,7 @@ export default async function Home() {
               Tell us your condition and preferred destination. Our team arranges
               consultations, programs and transfers for international patients.
             </p>
-            <a href="mailto:info@healthvoyage.com" className="btn">Request a consultation</a>
+            <Link href="/contact" className="btn">Request a consultation</Link>
           </div>
         </div>
       </section>

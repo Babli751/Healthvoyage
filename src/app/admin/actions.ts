@@ -7,6 +7,8 @@ import {
   createSanatorium,
   updateSanatorium,
   deleteSanatorium,
+  setInquiryStatus,
+  deleteInquiry,
   type SanatoriumInput,
 } from "@/lib/queries";
 
@@ -78,4 +80,16 @@ export async function deleteAction(id: number) {
   revalidatePath("/admin");
   revalidatePath("/sanatoriums");
   revalidatePath("/");
+}
+
+export async function setInquiryStatusAction(id: number, status: string) {
+  await requireAuth();
+  await setInquiryStatus(id, status);
+  revalidatePath("/admin/inquiries");
+}
+
+export async function deleteInquiryAction(id: number) {
+  await requireAuth();
+  await deleteInquiry(id);
+  revalidatePath("/admin/inquiries");
 }

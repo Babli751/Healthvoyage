@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/auth";
-import { getAllSanatoriumsAdmin, getCountriesWithCounts } from "@/lib/queries";
+import { getAllSanatoriumsAdmin, getCountriesWithCounts, countNewInquiries } from "@/lib/queries";
 import { logoutAction, deleteAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -10,9 +10,10 @@ export const dynamic = "force-dynamic";
 export default async function AdminHome() {
   if (!(await isAuthed())) redirect("/admin/login");
 
-  const [sanatoriums, countries] = await Promise.all([
+  const [sanatoriums, countries, newInquiries] = await Promise.all([
     getAllSanatoriumsAdmin(),
     getCountriesWithCounts(),
+    countNewInquiries(),
   ]);
 
   return (
@@ -23,6 +24,9 @@ export default async function AdminHome() {
           <p className="sub">{sanatoriums.length} sanatoriums · {countries.length} countries</p>
         </div>
         <div className="admin-actions">
+          <Link href="/admin/inquiries" className="link-btn">
+            Inquiries{newInquiries > 0 && <span className="badge badge-new" style={{ marginLeft: 6 }}>{newInquiries}</span>}
+          </Link>
           <Link href="/" className="link-btn">View site ↗</Link>
           <Link href="/admin/new" className="btn">+ New sanatorium</Link>
           <form action={logoutAction}><button className="link-btn" type="submit">Sign out</button></form>
