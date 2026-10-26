@@ -1,23 +1,3 @@
-// Emoji icon per treatment slug, for category grids.
-export const TREATMENT_ICON: Record<string, string> = {
-  "musculoskeletal-and-joints": "🦴",
-  "nervous-system": "🧠",
-  cardiovascular: "❤️",
-  "digestive-system": "🍃",
-  respiratory: "🫁",
-  "skin-conditions": "✋",
-  gynecology: "🌸",
-  "urology-and-kidneys": "💧",
-  "endocrine-and-metabolism": "⚖️",
-  diabetes: "🩸",
-  rehabilitation: "🧑‍⚕️",
-  "spa-and-wellness": "💆",
-  "naftalan-therapy": "🛢️",
-  "balneotherapy-mineral-water": "♨️",
-  "mud-therapy": "🌋",
-  "salt-halotherapy": "🧂",
-};
-
 // Short English descriptions per treatment slug, for the treatment pages.
 export const TREATMENT_INFO: Record<string, string> = {
   "musculoskeletal-and-joints":

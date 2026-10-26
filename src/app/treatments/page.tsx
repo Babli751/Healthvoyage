@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTreatmentsWithCounts } from "@/lib/queries";
-import { TREATMENT_INFO, TREATMENT_ICON } from "@/lib/treatmentInfo";
+import { TREATMENT_INFO } from "@/lib/treatmentInfo";
 
 export const dynamic = "force-dynamic";
 
@@ -26,8 +26,7 @@ export default async function TreatmentsPage() {
         <div className="container">
           <div className="why-grid">
             {treatments.map((t) => (
-              <Link href={`/treatments/${t.slug}`} className="why-card" key={t.id} style={{ display: "block" }}>
-                <div className="why-icon">{TREATMENT_ICON[t.slug] ?? "🩺"}</div>
+              <Link href={`/treatments/${t.slug}`} className="treat-card" key={t.id}>
                 <h3 style={{ marginBottom: 6 }}>{t.name}</h3>
                 <p style={{ marginBottom: 10 }}>{TREATMENT_INFO[t.slug] ?? ""}</p>
                 <span className="count" style={{ color: "var(--brand)", fontWeight: 600, fontSize: 14 }}>

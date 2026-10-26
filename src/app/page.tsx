@@ -2,7 +2,6 @@ import Link from "next/link";
 import { SanatoriumCard } from "@/components/SanatoriumCard";
 import { DestinationCard } from "@/components/DestinationCard";
 import { PremiumCard } from "@/components/PremiumCard";
-import { TREATMENT_ICON } from "@/lib/treatmentInfo";
 import {
   getCountriesWithCounts,
   getTreatmentsWithCounts,
@@ -82,21 +81,21 @@ export default async function Home() {
       <section className="section" style={{ paddingBottom: 0 }}>
         <div className="container">
           <div className="trust-boxes">
-            <div className="trust-box tb-blue">
-              <span className="tb-icon">🌍</span>
-              <div><strong>{countries.length}</strong><span>Destinations</span></div>
+            <div className="trust-box">
+              <strong>{countries.length}</strong>
+              <span>Destinations</span>
             </div>
-            <div className="trust-box tb-indigo">
-              <span className="tb-icon">🏥</span>
-              <div><strong>{totalSan}</strong><span>Health resorts</span></div>
+            <div className="trust-box">
+              <strong>{totalSan}</strong>
+              <span>Health resorts</span>
             </div>
-            <div className="trust-box tb-amber">
-              <span className="tb-icon">🩺</span>
-              <div><strong>{totalTreat}</strong><span>Treatment profiles</span></div>
+            <div className="trust-box">
+              <strong>{totalTreat}</strong>
+              <span>Treatment profiles</span>
             </div>
-            <div className="trust-box tb-green">
-              <span className="tb-icon">💬</span>
-              <div><strong>Free</strong><span>Consultation</span></div>
+            <div className="trust-box">
+              <strong>Free</strong>
+              <span>Consultation &amp; support</span>
             </div>
           </div>
         </div>
@@ -161,9 +160,8 @@ export default async function Home() {
           <div className="treat-grid">
             {treatments.map((t) => (
               <Link href={`/treatments/${t.slug}`} className="treat-tile" key={t.id}>
-                <span className="treat-icon">{TREATMENT_ICON[t.slug] ?? "🩺"}</span>
                 <span className="treat-name">{t.name}</span>
-                <span className="treat-count">{t.count} resorts</span>
+                <span className="treat-count">{t.count} resorts →</span>
               </Link>
             ))}
           </div>
@@ -230,13 +228,13 @@ export default async function Home() {
           <p className="sub">A single point of contact for treatment and recovery abroad.</p>
           <div className="why-grid">
             {[
-              { icon: "🩺", t: "Curated resorts", d: "Each sanatorium is listed with its real treatment profile — balneology, Naftalan, rehabilitation and more — so you match care to your condition." },
-              { icon: "🌍", t: "International support", d: "English-speaking coordination, help with travel and transfers, and guidance before, during and after your stay." },
-              { icon: "💬", t: "Free consultation", d: "Tell us your needs and we handle the back-and-forth with resorts. No fee to use the service." },
-              { icon: "🤝", t: "Real partnerships", d: "We work directly with resorts and sanatoriums to confirm availability, programs and transparent pricing." },
-            ].map((w) => (
+              { t: "Curated resorts", d: "Each sanatorium is listed with its real treatment profile — balneology, Naftalan, rehabilitation and more — so you match care to your condition." },
+              { t: "International support", d: "English-speaking coordination, help with travel and transfers, and guidance before, during and after your stay." },
+              { t: "Free consultation", d: "Tell us your needs and we handle the back-and-forth with resorts. No fee to use the service." },
+              { t: "Real partnerships", d: "We work directly with resorts and sanatoriums to confirm availability, programs and transparent pricing." },
+            ].map((w, i) => (
               <div className="why-card" key={w.t}>
-                <div className="why-icon">{w.icon}</div>
+                <span className="why-num">{String(i + 1).padStart(2, "0")}</span>
                 <h3>{w.t}</h3>
                 <p>{w.d}</p>
               </div>
