@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SanatoriumCard } from "@/components/SanatoriumCard";
 import { DestinationCard } from "@/components/DestinationCard";
+import { PremiumCard } from "@/components/PremiumCard";
 import { TREATMENT_ICON } from "@/lib/treatmentInfo";
 import {
   getCountriesWithCounts,
@@ -8,18 +9,23 @@ import {
   countSanatoriums,
   countTreatments,
   getFeaturedSanatoriums,
+  getTopChoiceSanatoriums,
+  getSanatoriumsByTreatment,
 } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [countries, treatments, totalSan, totalTreat, featured] = await Promise.all([
-    getCountriesWithCounts(),
-    getTreatmentsWithCounts(),
-    countSanatoriums(),
-    countTreatments(),
-    getFeaturedSanatoriums(6),
-  ]);
+  const [countries, treatments, totalSan, totalTreat, featured, topChoice, jointsResorts] =
+    await Promise.all([
+      getCountriesWithCounts(),
+      getTreatmentsWithCounts(),
+      countSanatoriums(),
+      countTreatments(),
+      getFeaturedSanatoriums(6),
+      getTopChoiceSanatoriums(4),
+      getSanatoriumsByTreatment("musculoskeletal-and-joints", 4),
+    ]);
 
   return (
     <main>
@@ -73,12 +79,26 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="trust-bar">
-        <div className="container trust-bar-inner">
-          <div className="trust-item"><strong>7</strong> partner destinations</div>
-          <div className="trust-item"><strong>{totalSan}</strong> vetted health resorts</div>
-          <div className="trust-item"><strong>{totalTreat}</strong> treatment profiles</div>
-          <div className="trust-item"><strong>Free</strong> consultation &amp; coordination</div>
+      <section className="section" style={{ paddingBottom: 0 }}>
+        <div className="container">
+          <div className="trust-boxes">
+            <div className="trust-box tb-blue">
+              <span className="tb-icon">🌍</span>
+              <div><strong>{countries.length}</strong><span>Destinations</span></div>
+            </div>
+            <div className="trust-box tb-indigo">
+              <span className="tb-icon">🏥</span>
+              <div><strong>{totalSan}</strong><span>Health resorts</span></div>
+            </div>
+            <div className="trust-box tb-amber">
+              <span className="tb-icon">🩺</span>
+              <div><strong>{totalTreat}</strong><span>Treatment profiles</span></div>
+            </div>
+            <div className="trust-box tb-green">
+              <span className="tb-icon">💬</span>
+              <div><strong>Free</strong><span>Consultation</span></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -103,7 +123,26 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section" id="countries">
+      <section className="section">
+        <div className="container">
+          <h2>Premium resorts</h2>
+          <p className="sub">Your health, our commitment to excellence — top-rated 5-star resorts.</p>
+          <div className="premium-grid">
+            {topChoice.map((s) => (
+              <PremiumCard
+                key={s.id}
+                slug={s.slug}
+                name={s.name}
+                city={s.city}
+                country={s.country_name}
+                image={s.image}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section" id="countries" style={{ paddingTop: 0 }}>
         <div className="container">
           <h2>Browse by destination</h2>
           <p className="sub">Choose a country to explore its sanatoriums and resorts.</p>
@@ -126,6 +165,34 @@ export default async function Home() {
                 <span className="treat-name">{t.name}</span>
                 <span className="treat-count">{t.count} resorts</span>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="showcase-head">
+            <div>
+              <h2>Care for joints, bones &amp; spine</h2>
+              <p className="sub" style={{ marginBottom: 0 }}>Expert musculoskeletal treatment and rehabilitation across our resorts.</p>
+            </div>
+            <Link href="/treatments/musculoskeletal-and-joints" className="showcase-link">View all →</Link>
+          </div>
+          <div className="san-grid">
+            {jointsResorts.map((s) => (
+              <SanatoriumCard
+                key={s.id}
+                slug={s.slug}
+                name={s.name}
+                city={s.city}
+                country={s.country_name}
+                flag={s.country_flag}
+                stars={s.stars}
+                summary={s.summary}
+                image={s.image}
+                treatments={s.treatments}
+              />
             ))}
           </div>
         </div>

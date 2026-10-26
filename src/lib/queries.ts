@@ -88,6 +88,26 @@ export function getFeaturedSanatoriums(limit = 6) {
   return query<SanatoriumFull>(`${SANATORIUM_SELECT} ORDER BY s.id ASC LIMIT $1`, [limit]);
 }
 
+// "Top Choice" — highest-rated resorts across destinations.
+export function getTopChoiceSanatoriums(limit = 4) {
+  return query<SanatoriumFull>(
+    `${SANATORIUM_SELECT} WHERE s.stars = 5 ORDER BY RANDOM() LIMIT $1`,
+    [limit]
+  );
+}
+
+// Resorts for a given treatment slug (themed showcase).
+export function getSanatoriumsByTreatment(slug: string, limit = 4) {
+  return query<SanatoriumFull>(
+    `${SANATORIUM_SELECT}
+     WHERE EXISTS (SELECT 1 FROM sanatorium_treatments st
+                   JOIN treatments t ON t.id = st.treatment_id
+                   WHERE st.sanatorium_id = s.id AND t.slug = $1)
+     ORDER BY s.stars DESC NULLS LAST, RANDOM() LIMIT $2`,
+    [slug, limit]
+  );
+}
+
 export function getCountryBySlug(slug: string) {
   return queryOne<Country>(`SELECT * FROM countries WHERE slug = $1`, [slug]);
 }
