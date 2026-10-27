@@ -16,7 +16,7 @@ export function Faq() {
       </div>
       <div className="faq-list">
         {FAQS.map((f, i) => (
-          <details key={i} className="faq-item">
+          <details key={i} className="faq-item reveal" style={{ transitionDelay: `${i * 70}ms` }}>
             <summary>
               <span>{f.q}</span>
               <IconChevron width={20} height={20} className="faq-chev" />
