@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteNav } from "@/components/SiteNav";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getSanatoriumBySlug, getRelatedSanatoriums } from "@/lib/queries";
@@ -21,7 +22,8 @@ export default async function SanatoriumDetail({
 
   return (
     <main>
-      <section className="detail-cover">
+      <SiteNav />
+      <section className="detail-cover detail-cover-nav">
         <Image src={s.image ?? "/logo.jpg"} alt={s.name} fill priority sizes="100vw" style={{ objectFit: "cover" }} />
         <div className="detail-cover-shade" />
         <div className="container detail-cover-inner">

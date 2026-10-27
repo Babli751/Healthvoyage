@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteNav } from "@/components/SiteNav";
 import { SanatoriumCard } from "@/components/SanatoriumCard";
 import {
   searchSanatoriums,
@@ -50,9 +51,10 @@ export default async function SanatoriumsPage({
 
   return (
     <main>
-      <section className="detail-hero">
+      <SiteNav />
+      <section className="page-hero page-hero-nav">
         <div className="container">
-          <div className="breadcrumb">
+          <div className="breadcrumb breadcrumb-light">
             <Link href="/">Home</Link> / Sanatoriums
           </div>
           <h1>{title}</h1>

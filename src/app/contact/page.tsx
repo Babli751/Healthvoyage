@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteNav } from "@/components/SiteNav";
 import { InquiryForm } from "@/components/InquiryForm";
 
 export const metadata: Metadata = {
@@ -10,7 +11,8 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main>
-      <section className="page-hero">
+      <SiteNav />
+      <section className="page-hero page-hero-nav">
         <div className="container">
           <h1>Request a free consultation</h1>
           <p>

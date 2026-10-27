@@ -34,12 +34,23 @@ body {
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
-  line-height: 1.6;
+  line-height: 1.65;
+  font-size: 16px;
+  letter-spacing: -0.003em;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3 { font-family: var(--font-display), Georgia, serif; font-weight: 600; letter-spacing: -0.015em; }
+/* Type scale (Elements of Typographic Style-ish ratio). Display serif for
+   headings, body sans for text; deliberate weights and tracking. */
+h1, h2, h3, h4 { font-family: var(--font-display), Georgia, serif; }
+h1 { font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
+h2 { font-weight: 600; letter-spacing: -0.015em; line-height: 1.1; }
+h3 { font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
+h4 { font-weight: 600; }
+p { text-wrap: pretty; }
+h1, h2, h3 { text-wrap: balance; }
 
 a { color: inherit; text-decoration: none; }
 
@@ -48,17 +59,21 @@ a { color: inherit; text-decoration: none; }
 /* ===== Design-system helpers (ported) ===== */
 .grad-primary { background-image: var(--gradient-primary); }
 .text-gradient { background-image: linear-gradient(90deg, var(--brand-glow), var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.glass { background: rgba(255,255,255,.14); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.28); }
+.glass { background: rgba(255,255,255,.14); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.28); }
+/* Hero glass elements: skip blur (cheaper, many instances) */
+.hero2-badge, .hero2-chip, .hero2-stat { backdrop-filter: none; background: rgba(255,255,255,.16); }
 .eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .2em; color: var(--brand); }
 
 @keyframes fade-up { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
 @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes ken-burns { from { transform: scale(1.05); } to { transform: scale(1.18) translate(-1%, -1%); } }
-@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(58,160,232,.6); } 100% { box-shadow: 0 0 0 18px rgba(58,160,232,0); } }
-.anim-float { animation: floaty 6s ease-in-out infinite; }
-.anim-ken-burns { animation: ken-burns 22s ease-in-out infinite alternate; }
-.anim-pulse-ring { animation: pulse-ring 2s infinite; }
+@keyframes ken-burns { from { transform: scale(1.05); } to { transform: scale(1.16) translate(-1%, -1%); } }
+/* transform/opacity-based ring (GPU, no per-frame repaint like box-shadow) */
+@keyframes pulse-ring { 0% { transform: scale(1); opacity: .5; } 70%,100% { transform: scale(1.9); opacity: 0; } }
+.anim-float { animation: floaty 6s ease-in-out infinite; will-change: transform; }
+.anim-ken-burns { animation: ken-burns 26s ease-in-out infinite alternate; will-change: transform; transform: translateZ(0); }
+.anim-pulse-ring { position: relative; }
+.anim-pulse-ring::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--brand-glow); z-index: -1; animation: pulse-ring 2.4s ease-out infinite; }
 
 /* Header */
 .site-header {
@@ -715,3 +730,17 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   .consult-row { grid-template-columns: 1fr; }
   .sec, .sec-soft, .sec-dark { padding: 64px 0; }
 }
+
+/* ---- Secondary pages: offset for fixed nav ---- */
+.page-hero-nav { padding-top: 124px; }
+.dest-hero-nav { padding-top: 76px; }
+.dest-hero-nav .dest-hero-inner { padding-top: 70px; }
+.detail-cover-nav { padding-top: 76px; }
+.detail-cover-nav .detail-cover-inner { padding-top: 70px; }
+.breadcrumb-light a { color: rgba(255,255,255,.92); }
+.breadcrumb-light { color: rgba(255,255,255,.78); }
+.page-hero-nav .breadcrumb { color: rgba(255,255,255,.8); margin-bottom: 14px; }
+.page-hero-nav .breadcrumb a { color: rgba(255,255,255,.92); }
+/* page-hero headings use display serif + white */
+.page-hero h1 { color: #fff; font-family: var(--font-display), serif; }
+.page-hero p { color: rgba(255,255,255,.9); }

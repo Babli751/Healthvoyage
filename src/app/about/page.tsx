@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteNav } from "@/components/SiteNav";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -10,7 +11,8 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main>
-      <section className="page-hero">
+      <SiteNav />
+      <section className="page-hero page-hero-nav">
         <div className="container">
           <h1>About HealthVoyage</h1>
           <p>

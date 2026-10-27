@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteNav } from "@/components/SiteNav";
 import { getCountriesWithCounts } from "@/lib/queries";
 import { DestinationCard } from "@/components/DestinationCard";
 
@@ -14,7 +15,8 @@ export default async function DestinationsPage() {
 
   return (
     <main>
-      <section className="page-hero">
+      <SiteNav />
+      <section className="page-hero page-hero-nav">
         <div className="container">
           <h1>Destinations</h1>
           <p>Explore health resorts and sanatoriums across our partner countries.</p>

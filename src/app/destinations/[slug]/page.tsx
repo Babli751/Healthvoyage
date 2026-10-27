@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SiteNav } from "@/components/SiteNav";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getCountryBySlug, searchSanatoriums } from "@/lib/queries";
@@ -34,7 +35,8 @@ export default async function DestinationPage({
 
   return (
     <main>
-      <section className="dest-hero">
+      <SiteNav />
+      <section className="dest-hero dest-hero-nav">
         <Image src={country.cover ?? "/logo.jpg"} alt={country.name} fill priority sizes="100vw" style={{ objectFit: "cover" }} />
         <div className="dest-hero-shade" />
         <div className="container dest-hero-inner">

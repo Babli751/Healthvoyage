@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteNav } from "@/components/SiteNav";
 import Link from "next/link";
 import { getTreatmentsWithCounts } from "@/lib/queries";
 import { TREATMENT_INFO } from "@/lib/treatmentInfo";
@@ -15,7 +16,8 @@ export default async function TreatmentsPage() {
 
   return (
     <main>
-      <section className="page-hero">
+      <SiteNav />
+      <section className="page-hero page-hero-nav">
         <div className="container">
           <h1>Treatment profiles</h1>
           <p>Find resorts specializing in your condition, from balneology to rehabilitation.</p>

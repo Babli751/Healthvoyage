@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SiteNav } from "@/components/SiteNav";
 import { notFound } from "next/navigation";
 import { getTreatmentBySlug, searchSanatoriums } from "@/lib/queries";
 import { TREATMENT_INFO } from "@/lib/treatmentInfo";
@@ -34,7 +35,8 @@ export default async function TreatmentPage({
 
   return (
     <main>
-      <section className="page-hero">
+      <SiteNav />
+      <section className="page-hero page-hero-nav">
         <div className="container">
           <div className="breadcrumb" style={{ color: "rgba(255,255,255,.82)" }}>
             <Link href="/" style={{ color: "rgba(255,255,255,.92)" }}>Home</Link> /{" "}
