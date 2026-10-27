@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 // Global reveal: watches every .reveal element and adds .in when it scrolls
-// into view. Respects reduced motion. Also exported as a wrapper component.
+// into view. Re-runs on every route change (layout doesn't remount on nav).
+// Respects reduced motion. Also exported as a wrapper component.
 export function RevealManager() {
+  const pathname = usePathname();
   useEffect(() => {
     const showAll = () =>
       document.querySelectorAll(".reveal:not(.in)").forEach((el) => el.classList.add("in"));
@@ -40,13 +43,13 @@ export function RevealManager() {
     observe();
 
     // Fallback: never leave content hidden if something goes wrong.
-    const failSafe = window.setTimeout(showAll, 2500);
+    const failSafe = window.setTimeout(showAll, 1500);
 
     return () => {
       io.disconnect();
       window.clearTimeout(failSafe);
     };
-  }, []);
+  }, [pathname]);
   return null;
 }
 

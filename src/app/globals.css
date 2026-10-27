@@ -326,9 +326,12 @@ a { color: inherit; text-decoration: none; }
 .why-card p { font-size: 14px; color: var(--muted); }
 
 /* ---------------- Page hero (secondary pages) ---------------- */
-.page-hero { background: linear-gradient(135deg, #1a6fd4 0%, #0f3f7a 100%); color: #fff; padding: 54px 0; }
-.page-hero h1 { font-size: 36px; letter-spacing: -0.03em; font-weight: 800; }
-.page-hero p { font-size: 17px; opacity: .92; max-width: 640px; margin-top: 12px; }
+.page-hero { position: relative; overflow: hidden; background: var(--navy); color: #fff; padding: 56px 0; }
+.page-hero::before { content: ""; position: absolute; right: -140px; top: -90px; width: 420px; height: 420px; border-radius: 50%; background: var(--brand); opacity: .32; filter: blur(90px); }
+.page-hero::after { content: ""; position: absolute; left: -120px; bottom: -120px; width: 320px; height: 320px; border-radius: 50%; background: var(--teal); opacity: .18; filter: blur(80px); }
+.page-hero .container { position: relative; z-index: 1; }
+.page-hero h1 { font-size: clamp(30px, 4.4vw, 50px); letter-spacing: -0.02em; font-weight: 600; margin-top: 10px; }
+.page-hero p { font-size: 18px; opacity: .88; max-width: 640px; margin-top: 14px; line-height: 1.6; }
 
 /* ---------------- Inquiry form ---------------- */
 .inquiry-form { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow); }
@@ -856,4 +859,75 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   .about-img { height: 320px; }
   .about-values { grid-template-columns: 1fr 1fr; }
   .about-cta { padding: 32px; }
+}
+
+/* ======================================================================
+   MOBILE OPTIMIZATION
+   ====================================================================== */
+html, body { overflow-x: hidden; max-width: 100%; }
+img, video { max-width: 100%; height: auto; }
+
+/* Tablet */
+@media (max-width: 1000px) {
+  .container { padding: 0 18px; }
+  .about-split { grid-template-columns: 1fr; gap: 28px; }
+  .about-values { grid-template-columns: repeat(2, 1fr); }
+  .tprofile-grid, .scard-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Phone */
+@media (max-width: 680px) {
+  .sec, .sec-soft { padding: 52px 0; }
+  .sectitle { font-size: clamp(26px, 7vw, 34px); }
+  .secsub { font-size: 16px; }
+  .sechead { margin-bottom: 32px; }
+
+  /* Hero */
+  .hero2 { min-height: auto; }
+  .hero2-inner { padding-top: 96px; padding-bottom: 44px; }
+  .hero2-title { font-size: clamp(30px, 9vw, 42px); }
+  .hero2-sub { font-size: 16px; }
+  .hero2-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .hero2-stat-n { font-size: 26px; }
+
+  /* Grids collapse */
+  .tgrid, .tprofile-grid, .scard-grid, .rgrid, .revgrid, .about-values { grid-template-columns: 1fr; }
+  .bento { grid-template-columns: 1fr; grid-auto-rows: 180px; }
+  .bento-big { grid-column: auto; grid-row: auto; }
+  .bento-big .bento-name { font-size: 22px; }
+
+  /* Secondary page heroes */
+  .page-hero-nav { padding-top: 104px; }
+  .page-hero h1 { font-size: clamp(26px, 8vw, 36px); }
+  .catalog-hero { padding-top: 100px; padding-bottom: 36px; }
+  .catalog-search { flex-direction: column; }
+  .catalog-search button { padding: 13px; }
+
+  /* About */
+  .about-stats-inner { grid-template-columns: repeat(2, 1fr); }
+  .about-stat { border-bottom: 1px solid rgba(255,255,255,.1); }
+  .about-stat-n { font-size: 32px; }
+  .about-cta { flex-direction: column; align-items: flex-start; padding: 28px; }
+  .about-cta-btn { width: 100%; justify-content: center; }
+
+  /* Detail pages */
+  .detail-cover-nav { min-height: auto; }
+  .detail-cover-inner h1 { font-size: 26px; }
+  .contact-layout { grid-template-columns: 1fr; }
+
+  /* Tap targets */
+  .chip { padding: 9px 15px; }
+  .sitenav-mobile a { padding: 12px; }
+
+  /* Float chat smaller, out of the way */
+  .floatchat { width: 52px; height: 52px; right: 16px; bottom: 16px; }
+
+  /* Reduce heavy continuous animation on small screens */
+  .anim-ken-burns { animation-duration: 34s; }
+}
+
+/* Small phone */
+@media (max-width: 380px) {
+  .hero2-stats { grid-template-columns: 1fr 1fr; }
+  .marquee-track { gap: 36px; }
 }

@@ -66,7 +66,7 @@ export default async function SanatoriumDetail({
           {related.length > 0 && (
             <>
               <h3 style={{ marginTop: 44 }}>More in {s.country_name}</h3>
-              <div className="san-grid">
+              <div className="scard-grid">
                 {related.map((r) => (
                   <SanatoriumCard
                     key={r.id}
