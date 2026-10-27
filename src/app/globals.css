@@ -741,6 +741,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   .sitenav-burger { display: block; }
   .hero2-search { grid-template-columns: 1fr; }
   .hero2-field-div { border-left: none; border-top: 1px solid var(--border); }
+  .hero2-search-btn { padding: 15px 24px; width: 100%; }
   .hero2-stats { grid-template-columns: repeat(2, 1fr); }
   .tgrid { grid-template-columns: repeat(2, 1fr); }
   .rgrid { grid-template-columns: 1fr; }
@@ -890,6 +891,13 @@ img, video { max-width: 100%; height: auto; }
   .hero2-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .hero2-stat-n { font-size: 26px; }
 
+  /* Hero search: stack + give the button real height */
+  .hero2-search { grid-template-columns: 1fr; gap: 4px; padding: 10px; }
+  .hero2-field { padding: 11px 14px; }
+  .hero2-search-btn { padding: 15px 24px; width: 100%; font-size: 16px; }
+  .hero2-popular { gap: 7px; }
+  .hero2-chip { padding: 7px 14px; }
+
   /* Grids collapse */
   .tgrid, .tprofile-grid, .scard-grid, .rgrid, .revgrid, .about-values { grid-template-columns: 1fr; }
   .bento { grid-template-columns: 1fr; grid-auto-rows: 180px; }
@@ -915,9 +923,16 @@ img, video { max-width: 100%; height: auto; }
   .detail-cover-inner h1 { font-size: 26px; }
   .contact-layout { grid-template-columns: 1fr; }
 
-  /* Tap targets */
+  /* Tap targets + full-width primary buttons */
   .chip { padding: 9px 15px; }
   .sitenav-mobile a { padding: 12px; }
+  .btn { display: inline-block; padding: 13px 22px; }
+  .sitenav-mobile .sitenav-btn { justify-content: center; padding: 13px; }
+  .viewall { margin-bottom: 24px; }
+  .sechead-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .sechead-row .sechead { margin-bottom: 20px; }
+  /* Premium/resort footer actions wrap cleanly */
+  .rcard-foot, .scard-foot { font-size: 13px; }
 
   /* Float chat smaller, out of the way */
   .floatchat { width: 52px; height: 52px; right: 16px; bottom: 16px; }
