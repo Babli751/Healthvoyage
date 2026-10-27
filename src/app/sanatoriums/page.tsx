@@ -52,45 +52,50 @@ export default async function SanatoriumsPage({
   return (
     <main>
       <SiteNav />
-      <section className="page-hero page-hero-nav">
-        <div className="container">
+      <section className="catalog-hero">
+        <div className="catalog-hero-orb" aria-hidden="true" />
+        <div className="container catalog-hero-inner">
           <div className="breadcrumb breadcrumb-light">
             <Link href="/">Home</Link> / Sanatoriums
           </div>
           <h1>{title}</h1>
-          <div className="meta">{sanatoriums.length} results</div>
+          <p className="catalog-count">{sanatoriums.length} resorts found</p>
+          <form action="/sanatoriums" className="catalog-search">
+            <input type="text" name="q" defaultValue={q ?? ""} placeholder="Search by name, city or treatment…" />
+            <button type="submit" className="grad-primary">Search</button>
+          </form>
         </div>
       </section>
 
       <section className="section">
         <div className="container">
-          <form action="/sanatoriums" className="searchbar" style={{ marginTop: 0, marginBottom: 28, maxWidth: 480 }}>
-            <input type="text" name="q" defaultValue={q ?? ""} placeholder="Search sanatoriums…" style={{ boxShadow: "var(--shadow)" }} />
-          </form>
-
-          <div className="filters">
-            <Link href="/sanatoriums" className={`chip ${!country && !treatment ? "active" : ""}`}>
-              All
-            </Link>
-            {countries.map((c) => (
-              <Link key={c.id} href={qs({ country: c.slug, treatment: undefined })} className={`chip ${country === c.slug ? "active" : ""}`}>
-                {c.flag} {c.name}
-              </Link>
-            ))}
+          <div className="filterbar">
+            <div className="filterbar-label">Country</div>
+            <div className="filters">
+              <Link href="/sanatoriums" className={`chip ${!country && !treatment ? "active" : ""}`}>All</Link>
+              {countries.map((c) => (
+                <Link key={c.id} href={qs({ country: c.slug, treatment: undefined })} className={`chip ${country === c.slug ? "active" : ""}`}>
+                  {c.flag} {c.name}
+                </Link>
+              ))}
+            </div>
           </div>
 
-          <div className="filters">
-            {treatments.map((t) => (
-              <Link key={t.id} href={qs({ treatment: t.slug, country: undefined })} className={`chip ${treatment === t.slug ? "active" : ""}`}>
-                {t.name}
-              </Link>
-            ))}
+          <div className="filterbar">
+            <div className="filterbar-label">Treatment</div>
+            <div className="filters">
+              {treatments.map((t) => (
+                <Link key={t.id} href={qs({ treatment: t.slug, country: undefined })} className={`chip ${treatment === t.slug ? "active" : ""}`}>
+                  {t.name}
+                </Link>
+              ))}
+            </div>
           </div>
 
           {sanatoriums.length === 0 ? (
             <div className="empty">No sanatoriums match your filters. <Link href="/sanatoriums" style={{ color: "var(--brand)" }}>Clear filters</Link></div>
           ) : (
-            <div className="san-grid">
+            <div className="scard-grid">
               {sanatoriums.map((s) => (
                 <SanatoriumCard
                   key={s.id}

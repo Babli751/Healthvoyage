@@ -3,6 +3,7 @@ import { SiteNav } from "@/components/SiteNav";
 import Link from "next/link";
 import { getTreatmentsWithCounts } from "@/lib/queries";
 import { TREATMENT_INFO } from "@/lib/treatmentInfo";
+import { IconArrowRight } from "@/components/Icon";
 
 export const dynamic = "force-dynamic";
 
@@ -19,21 +20,25 @@ export default async function TreatmentsPage() {
       <SiteNav />
       <section className="page-hero page-hero-nav">
         <div className="container">
-          <h1>Treatment profiles</h1>
-          <p>Find resorts specializing in your condition, from balneology to rehabilitation.</p>
+          <span className="eyebrow eyebrow-light">Treatment profiles</span>
+          <h1>Find care for your condition</h1>
+          <p>Resorts specialised in {treatments.length} therapeutic areas, from balneology and Naftalan oil to rehabilitation.</p>
         </div>
       </section>
 
       <section className="section">
         <div className="container">
-          <div className="why-grid">
+          <div className="tprofile-grid">
             {treatments.map((t) => (
-              <Link href={`/treatments/${t.slug}`} className="treat-card" key={t.id}>
-                <h3 style={{ marginBottom: 6 }}>{t.name}</h3>
-                <p style={{ marginBottom: 10 }}>{TREATMENT_INFO[t.slug] ?? ""}</p>
-                <span className="count" style={{ color: "var(--brand)", fontWeight: 600, fontSize: 14 }}>
-                  {t.count} resorts →
-                </span>
+              <Link href={`/treatments/${t.slug}`} className="reveal tprofile" key={t.id}>
+                <span className="tprofile-glow" aria-hidden="true" />
+                <div className="tprofile-head">
+                  <span className="tprofile-badge">{t.name.charAt(0)}</span>
+                  <span className="tprofile-count">{t.count} resorts</span>
+                </div>
+                <h3>{t.name}</h3>
+                <p>{TREATMENT_INFO[t.slug] ?? ""}</p>
+                <span className="tprofile-more">Explore <IconArrowRight width={15} height={15} /></span>
               </Link>
             ))}
           </div>
