@@ -3,9 +3,17 @@ import { Pool, type QueryResultRow } from "pg";
 // One shared pool. Reused across hot-reloads in dev so we don't leak connections.
 const globalForPg = globalThis as unknown as { pgPool?: Pool };
 
+const connectionString = process.env.DATABASE_URL;
+
 export const pool =
   globalForPg.pgPool ??
-  new Pool({ connectionString: process.env.DATABASE_URL });
+  new Pool({
+    connectionString,
+    // Cloud Postgres (Neon/Supabase/Vercel) needs SSL; local does not.
+    ssl: connectionString && !connectionString.includes("localhost")
+      ? { rejectUnauthorized: false }
+      : undefined,
+  });
 
 if (process.env.NODE_ENV !== "production") globalForPg.pgPool = pool;
 
