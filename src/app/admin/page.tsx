@@ -1,76 +1,94 @@
 import Link from "next/link";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/auth";
-import { getAllSanatoriumsAdmin, getCountriesWithCounts, countNewInquiries } from "@/lib/queries";
-import { logoutAction, deleteAction } from "./actions";
+import {
+  countSanatoriums, getCountriesWithCounts, getTreatmentsWithCounts,
+  countNewInquiries, getInquiries,
+} from "@/lib/queries";
+import { IconMapPin, IconMessage, IconBadge, IconArrowRight } from "@/components/Icon";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminHome() {
+export default async function AdminDashboard() {
   if (!(await isAuthed())) redirect("/admin/login");
 
-  const [sanatoriums, countries, newInquiries] = await Promise.all([
-    getAllSanatoriumsAdmin(),
+  const [totalSan, countries, treatments, newInq, inquiries] = await Promise.all([
+    countSanatoriums(),
     getCountriesWithCounts(),
+    getTreatmentsWithCounts(),
     countNewInquiries(),
+    getInquiries(),
   ]);
 
+  const recent = inquiries.slice(0, 6);
+
+  const stats = [
+    { label: "Sanatoriums", value: totalSan, href: "/admin/sanatoriums", Icon: IconMapPin, tone: "blue" },
+    { label: "Countries", value: countries.length, href: "/admin/sanatoriums", Icon: IconMapPin, tone: "teal" },
+    { label: "Treatment profiles", value: treatments.length, href: "/admin/sanatoriums", Icon: IconBadge, tone: "amber" },
+    { label: "New inquiries", value: newInq, href: "/admin/inquiries", Icon: IconMessage, tone: "green" },
+  ];
+
   return (
-    <main className="admin-wrap">
-      <div className="admin-topbar">
+    <div className="apage">
+      <header className="apage-head">
         <div>
-          <h1>Content panel</h1>
-          <p className="sub">{sanatoriums.length} sanatoriums · {countries.length} countries</p>
+          <h1>Dashboard</h1>
+          <p>Overview of your catalog and patient inquiries.</p>
         </div>
-        <div className="admin-actions">
-          <Link href="/admin/inquiries" className="link-btn">
-            Inquiries{newInquiries > 0 && <span className="badge badge-new" style={{ marginLeft: 6 }}>{newInquiries}</span>}
+        <Link href="/admin/sanatoriums/new" className="abtn grad-primary">+ Add sanatorium</Link>
+      </header>
+
+      <div className="astat-grid">
+        {stats.map((s) => (
+          <Link key={s.label} href={s.href} className={`astat astat-${s.tone}`}>
+            <span className="astat-ic"><s.Icon width={22} height={22} /></span>
+            <div className="astat-v">{s.value}</div>
+            <div className="astat-l">{s.label}</div>
           </Link>
-          <Link href="/" className="link-btn">View site ↗</Link>
-          <Link href="/admin/new" className="btn">+ New sanatorium</Link>
-          <form action={logoutAction}><button className="link-btn" type="submit">Sign out</button></form>
-        </div>
+        ))}
       </div>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Country</th>
-            <th>City</th>
-            <th>Stars</th>
-            <th>Tags</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {sanatoriums.map((s) => (
-            <tr key={s.id}>
-              <td>
-                {s.image ? (
-                  <Image src={s.image} alt="" width={56} height={40} style={{ objectFit: "cover", borderRadius: 6 }} />
-                ) : (
-                  <div className="thumb-empty" />
-                )}
-              </td>
-              <td><strong>{s.name}</strong></td>
-              <td>{s.country_flag} {s.country_name}</td>
-              <td>{s.city}</td>
-              <td>{s.stars ? "★".repeat(s.stars) : "—"}</td>
-              <td className="muted">{s.treatments.length}</td>
-              <td className="row-actions">
-                <Link href={`/sanatoriums/${s.slug}`} className="link-btn">View</Link>
-                <Link href={`/admin/${s.id}/edit`} className="link-btn">Edit</Link>
-                <form action={deleteAction.bind(null, s.id)}>
-                  <button type="submit" className="link-btn danger">Delete</button>
-                </form>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </main>
+      <div className="adash-grid">
+        <section className="acard">
+          <div className="acard-head">
+            <h2>Recent inquiries</h2>
+            <Link href="/admin/inquiries" className="acard-link">View all <IconArrowRight width={14} height={14} /></Link>
+          </div>
+          {recent.length === 0 ? (
+            <p className="amuted">No inquiries yet.</p>
+          ) : (
+            <ul className="arecent">
+              {recent.map((q) => (
+                <li key={q.id}>
+                  <span className={`adot adot-${q.status}`} />
+                  <div className="arecent-main">
+                    <strong>{q.name}</strong>
+                    <span className="amuted">{q.sanatorium_name ? `Re: ${q.sanatorium_name}` : q.email}</span>
+                  </div>
+                  <span className="arecent-date">{new Date(q.created_at).toLocaleDateString()}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="acard">
+          <div className="acard-head"><h2>By country</h2></div>
+          <ul className="abars">
+            {countries.map((c) => {
+              const max = Math.max(...countries.map((x) => x.count), 1);
+              return (
+                <li key={c.id}>
+                  <span className="abars-label">{c.flag} {c.name}</span>
+                  <span className="abars-track"><span className="abars-fill grad-primary" style={{ width: `${(c.count / max) * 100}%` }} /></span>
+                  <span className="abars-n">{c.count}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      </div>
+    </div>
   );
 }

@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { isAuthed } from "@/lib/auth";
 import { getCountries, getTreatments, getSanatoriumById } from "@/lib/queries";
 import { SanatoriumForm } from "@/components/admin/SanatoriumForm";
-import { updateAction } from "../../actions";
+import { updateAction } from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -29,13 +29,13 @@ export default async function EditSanatorium({
   const boundUpdate = updateAction.bind(null, sanatoriumId);
 
   return (
-    <main className="admin-wrap">
-      <div className="admin-topbar">
+    <div className="apage">
+      <header className="apage-head">
         <div>
-          <Link href="/admin" className="link-btn">← Back</Link>
+          <Link href="/admin/sanatoriums" className="alink">← Back to list</Link>
           <h1>Edit: {sanatorium.name}</h1>
         </div>
-      </div>
+      </header>
       <SanatoriumForm
         action={boundUpdate}
         countries={countries}
@@ -43,6 +43,6 @@ export default async function EditSanatorium({
         initial={sanatorium}
         submitLabel="Save changes"
       />
-    </main>
+    </div>
   );
 }

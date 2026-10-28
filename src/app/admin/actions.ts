@@ -56,9 +56,10 @@ export async function createAction(formData: FormData) {
   }
   await createSanatorium(input);
   revalidatePath("/admin");
+  revalidatePath("/admin/sanatoriums");
   revalidatePath("/sanatoriums");
   revalidatePath("/");
-  redirect("/admin");
+  redirect("/admin/sanatoriums");
 }
 
 export async function updateAction(id: number, formData: FormData) {
@@ -69,15 +70,17 @@ export async function updateAction(id: number, formData: FormData) {
   }
   await updateSanatorium(id, input);
   revalidatePath("/admin");
+  revalidatePath("/admin/sanatoriums");
   revalidatePath("/sanatoriums");
   revalidatePath("/");
-  redirect("/admin");
+  redirect("/admin/sanatoriums");
 }
 
 export async function deleteAction(id: number) {
   await requireAuth();
   await deleteSanatorium(id);
   revalidatePath("/admin");
+  revalidatePath("/admin/sanatoriums");
   revalidatePath("/sanatoriums");
   revalidatePath("/");
 }

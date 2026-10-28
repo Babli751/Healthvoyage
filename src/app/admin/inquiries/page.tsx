@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/auth";
 import { getInquiries } from "@/lib/queries";
-import { logoutAction, setInquiryStatusAction, deleteInquiryAction } from "../actions";
+import { setInquiryStatusAction, deleteInquiryAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -19,18 +18,13 @@ export default async function AdminInquiries() {
   const newCount = inquiries.filter((i) => i.status === "new").length;
 
   return (
-    <main className="admin-wrap">
-      <div className="admin-topbar">
+    <div className="apage">
+      <header className="apage-head">
         <div>
-          <Link href="/admin" className="link-btn">← Sanatoriums</Link>
           <h1>Inquiries</h1>
-          <p className="sub">{inquiries.length} total · {newCount} new</p>
+          <p>{inquiries.length} total · {newCount} new</p>
         </div>
-        <div className="admin-actions">
-          <Link href="/" className="link-btn">View site ↗</Link>
-          <form action={logoutAction}><button className="link-btn" type="submit">Sign out</button></form>
-        </div>
-      </div>
+      </header>
 
       {inquiries.length === 0 ? (
         <div className="empty">No inquiries yet.</div>
@@ -66,6 +60,6 @@ export default async function AdminInquiries() {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }
