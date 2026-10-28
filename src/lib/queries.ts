@@ -28,6 +28,10 @@ export interface Sanatorium {
   summary: string;
   description: string;
   image: string | null;
+  gallery: string[];
+  meta_title: string | null;
+  meta_description: string | null;
+  keywords: string | null;
   country_id: number;
 }
 
@@ -41,7 +45,8 @@ export interface SanatoriumFull extends Sanatorium {
 
 // Aggregate treatments[] via a correlated json subquery so each row is complete.
 const SANATORIUM_SELECT = `
-  SELECT s.id, s.name, s.slug, s.city, s.stars, s.summary, s.description, s.image, s.country_id,
+  SELECT s.id, s.name, s.slug, s.city, s.stars, s.summary, s.description, s.image,
+         COALESCE(s.gallery, '[]') AS gallery, s.meta_title, s.meta_description, s.keywords, s.country_id,
          c.name AS country_name, c.slug AS country_slug, c.flag AS country_flag,
          COALESCE(
            (SELECT json_agg(json_build_object('name', t.name, 'slug', t.slug) ORDER BY t.name)
@@ -192,6 +197,10 @@ export interface SanatoriumInput {
   summary: string;
   description: string;
   image: string | null;
+  gallery: string[];
+  metaTitle: string | null;
+  metaDescription: string | null;
+  keywords: string | null;
   countryId: number;
   treatmentIds: number[];
 }
@@ -216,9 +225,10 @@ export async function createSanatorium(input: SanatoriumInput): Promise<number> 
     slug = `${base}-${n++}`;
   }
   const row = await queryOne<{ id: number }>(
-    `INSERT INTO sanatoriums (name, slug, city, stars, summary, description, image, country_id)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
-    [input.name, slug, input.city, input.stars, input.summary, input.description, input.image, input.countryId]
+    `INSERT INTO sanatoriums (name, slug, city, stars, summary, description, image, gallery, meta_title, meta_description, keywords, country_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
+    [input.name, slug, input.city, input.stars, input.summary, input.description, input.image,
+     JSON.stringify(input.gallery ?? []), input.metaTitle, input.metaDescription, input.keywords, input.countryId]
   );
   const id = row!.id;
   await setTreatments(id, input.treatmentIds);
@@ -228,9 +238,11 @@ export async function createSanatorium(input: SanatoriumInput): Promise<number> 
 export async function updateSanatorium(id: number, input: SanatoriumInput): Promise<void> {
   await query(
     `UPDATE sanatoriums
-     SET name=$1, city=$2, stars=$3, summary=$4, description=$5, image=$6, country_id=$7
-     WHERE id=$8`,
-    [input.name, input.city, input.stars, input.summary, input.description, input.image, input.countryId, id]
+     SET name=$1, city=$2, stars=$3, summary=$4, description=$5, image=$6, gallery=$7,
+         meta_title=$8, meta_description=$9, keywords=$10, country_id=$11
+     WHERE id=$12`,
+    [input.name, input.city, input.stars, input.summary, input.description, input.image,
+     JSON.stringify(input.gallery ?? []), input.metaTitle, input.metaDescription, input.keywords, input.countryId, id]
   );
   await setTreatments(id, input.treatmentIds);
 }
@@ -313,4 +325,112 @@ export async function setInquiryStatus(id: number, status: string): Promise<void
 
 export async function deleteInquiry(id: number): Promise<void> {
   await query(`DELETE FROM inquiries WHERE id = $1`, [id]);
+}
+
+// --- Testimonials ----------------------------------------------------------
+export interface Testimonial {
+  id: number; name: string; country: string | null; resort: string | null;
+  quote: string; rating: number; published: boolean; sort_order: number;
+}
+export function getTestimonials(onlyPublished = false) {
+  return query<Testimonial>(
+    `SELECT * FROM testimonials ${onlyPublished ? "WHERE published = true" : ""} ORDER BY sort_order ASC, id ASC`
+  );
+}
+export function getTestimonialById(id: number) {
+  return queryOne<Testimonial>(`SELECT * FROM testimonials WHERE id = $1`, [id]);
+}
+export async function createTestimonial(d: Omit<Testimonial, "id">) {
+  await query(
+    `INSERT INTO testimonials (name, country, resort, quote, rating, published, sort_order)
+     VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+    [d.name, d.country, d.resort, d.quote, d.rating, d.published, d.sort_order]
+  );
+}
+export async function updateTestimonial(id: number, d: Omit<Testimonial, "id">) {
+  await query(
+    `UPDATE testimonials SET name=$1, country=$2, resort=$3, quote=$4, rating=$5, published=$6, sort_order=$7 WHERE id=$8`,
+    [d.name, d.country, d.resort, d.quote, d.rating, d.published, d.sort_order, id]
+  );
+}
+export async function deleteTestimonial(id: number) {
+  await query(`DELETE FROM testimonials WHERE id = $1`, [id]);
+}
+
+// --- FAQ -------------------------------------------------------------------
+export interface Faq {
+  id: number; question: string; answer: string; published: boolean; sort_order: number;
+}
+export function getFaqs(onlyPublished = false) {
+  return query<Faq>(
+    `SELECT * FROM faqs ${onlyPublished ? "WHERE published = true" : ""} ORDER BY sort_order ASC, id ASC`
+  );
+}
+export function getFaqById(id: number) {
+  return queryOne<Faq>(`SELECT * FROM faqs WHERE id = $1`, [id]);
+}
+export async function createFaq(d: Omit<Faq, "id">) {
+  await query(`INSERT INTO faqs (question, answer, published, sort_order) VALUES ($1,$2,$3,$4)`,
+    [d.question, d.answer, d.published, d.sort_order]);
+}
+export async function updateFaq(id: number, d: Omit<Faq, "id">) {
+  await query(`UPDATE faqs SET question=$1, answer=$2, published=$3, sort_order=$4 WHERE id=$5`,
+    [d.question, d.answer, d.published, d.sort_order, id]);
+}
+export async function deleteFaq(id: number) {
+  await query(`DELETE FROM faqs WHERE id = $1`, [id]);
+}
+
+// --- Blog ------------------------------------------------------------------
+export interface BlogCategory { id: number; name: string; slug: string }
+export interface BlogPost {
+  id: number; title: string; slug: string; excerpt: string | null; body: string;
+  cover: string | null; category_id: number | null; meta_title: string | null;
+  meta_description: string | null; keywords: string | null; published: boolean; created_at: string;
+}
+export interface BlogPostFull extends BlogPost { category_name: string | null; category_slug: string | null }
+
+export function getBlogCategories() {
+  return query<BlogCategory>(`SELECT * FROM blog_categories ORDER BY name ASC`);
+}
+const BLOG_SELECT = `
+  SELECT p.*, c.name AS category_name, c.slug AS category_slug
+  FROM blog_posts p LEFT JOIN blog_categories c ON c.id = p.category_id`;
+export function getBlogPosts(onlyPublished = false) {
+  return query<BlogPostFull>(`${BLOG_SELECT} ${onlyPublished ? "WHERE p.published = true" : ""} ORDER BY p.created_at DESC`);
+}
+export function getBlogPostBySlug(slug: string) {
+  return queryOne<BlogPostFull>(`${BLOG_SELECT} WHERE p.slug = $1`, [slug]);
+}
+export function getBlogPostById(id: number) {
+  return queryOne<BlogPostFull>(`${BLOG_SELECT} WHERE p.id = $1`, [id]);
+}
+export interface BlogInput {
+  title: string; excerpt: string | null; body: string; cover: string | null;
+  categoryId: number | null; metaTitle: string | null; metaDescription: string | null;
+  keywords: string | null; published: boolean;
+}
+export async function createBlogPost(d: BlogInput): Promise<number> {
+  const base = slugify(d.title);
+  let slug = base, n = 2;
+  while (await queryOne(`SELECT 1 FROM blog_posts WHERE slug=$1`, [slug])) slug = `${base}-${n++}`;
+  const row = await queryOne<{ id: number }>(
+    `INSERT INTO blog_posts (title, slug, excerpt, body, cover, category_id, meta_title, meta_description, keywords, published)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+    [d.title, slug, d.excerpt, d.body, d.cover, d.categoryId, d.metaTitle, d.metaDescription, d.keywords, d.published]
+  );
+  return row!.id;
+}
+export async function updateBlogPost(id: number, d: BlogInput) {
+  await query(
+    `UPDATE blog_posts SET title=$1, excerpt=$2, body=$3, cover=$4, category_id=$5,
+       meta_title=$6, meta_description=$7, keywords=$8, published=$9 WHERE id=$10`,
+    [d.title, d.excerpt, d.body, d.cover, d.categoryId, d.metaTitle, d.metaDescription, d.keywords, d.published, id]
+  );
+}
+export async function deleteBlogPost(id: number) {
+  await query(`DELETE FROM blog_posts WHERE id = $1`, [id]);
+}
+export async function createBlogCategory(name: string) {
+  await query(`INSERT INTO blog_categories (name, slug) VALUES ($1,$2) ON CONFLICT DO NOTHING`, [name, slugify(name)]);
 }

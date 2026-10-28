@@ -17,6 +17,7 @@ export function Footer() {
           <Link href="/sanatoriums">All sanatoriums</Link>
           <Link href="/destinations">Destinations</Link>
           <Link href="/treatments">Treatments</Link>
+          <Link href="/blog">Blog</Link>
         </div>
         <div className="footer-col">
           <h4>Company</h4>

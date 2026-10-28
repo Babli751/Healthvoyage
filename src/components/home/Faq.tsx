@@ -1,13 +1,9 @@
 import { IconChevron } from "@/components/Icon";
 
-const FAQS = [
-  { q: "Is the consultation really free?", a: "Yes. Our coordinators help you compare resorts, programs and prices at no cost. You pay the resort directly for your stay." },
-  { q: "How do I know which resort suits my condition?", a: "Share your diagnosis or medical notes. Our team checks suitability with the resort's doctors before you book." },
-  { q: "Do you help with visas and transfers?", a: "We prepare invitation letters where required and can organize airport transfers and local transport." },
-  { q: "How long is a typical treatment program?", a: "Most sanatorium programs run 10–21 days. Shorter wellness stays of 5–7 days are also available." },
-];
+interface FaqItem { id: number; question: string; answer: string }
 
-export function Faq() {
+export function Faq({ items }: { items: FaqItem[] }) {
+  if (!items.length) return null;
   return (
     <section className="container sec-faq">
       <div className="sechead sechead-center">
@@ -15,13 +11,13 @@ export function Faq() {
         <h2 className="sectitle">Questions, answered</h2>
       </div>
       <div className="faq-list">
-        {FAQS.map((f, i) => (
-          <details key={i} className="faq-item reveal" style={{ transitionDelay: `${i * 70}ms` }}>
+        {items.map((f, i) => (
+          <details key={f.id} className="faq-item reveal" style={{ transitionDelay: `${i * 70}ms` }}>
             <summary>
-              <span>{f.q}</span>
+              <span>{f.question}</span>
               <IconChevron width={20} height={20} className="faq-chev" />
             </summary>
-            <div className="faq-ans">{f.a}</div>
+            <div className="faq-ans">{f.answer}</div>
           </details>
         ))}
       </div>

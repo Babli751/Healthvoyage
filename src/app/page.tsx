@@ -13,7 +13,7 @@ import {
 } from "@/components/Icon";
 import {
   getCountriesWithCounts, getTreatmentsWithCounts, countSanatoriums,
-  getTopChoiceSanatoriums, getFeaturedSanatoriums,
+  getTopChoiceSanatoriums, getFeaturedSanatoriums, getTestimonials, getFaqs,
 } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -25,12 +25,6 @@ const STEPS = [
   { t: "Heal", d: "Travel and receive care, with support during your stay and after you return." },
 ];
 
-const REVIEWS = [
-  { n: "Anna K.", c: "Germany", t: "Garabag Resort & Spa", q: "The coordinator answered every question within hours. My psoriasis improved more in 14 days of Naftalan than in years of creams." },
-  { n: "Michael R.", c: "United Kingdom", t: "Premier Aqua, Serbia", q: "After knee surgery I needed serious rehab. The program was professional, the staff caring, and the price far below home." },
-  { n: "Leyla M.", c: "Turkey", t: "Lopota Lake, Georgia", q: "Everything from the airport pickup to the doctor's schedule was handled. It felt like travelling with family." },
-];
-
 const WHY = [
   { Icon: IconShield, t: "Verified resorts only", d: "Every partner is licensed and medically reviewed." },
   { Icon: IconHeadphones, t: "Personal coordinator", d: "One person guides you, in your language, 24/7." },
@@ -39,12 +33,14 @@ const WHY = [
 ];
 
 export default async function Home() {
-  const [countries, treatments, totalSan, topChoice, featured] = await Promise.all([
+  const [countries, treatments, totalSan, topChoice, featured, reviews, faqs] = await Promise.all([
     getCountriesWithCounts(),
     getTreatmentsWithCounts(),
     countSanatoriums(),
     getTopChoiceSanatoriums(4),
     getFeaturedSanatoriums(1),
+    getTestimonials(true),
+    getFaqs(true),
   ]);
 
   const whyImg = featured[0]?.image ?? "/img/32334284.jpg";
@@ -247,14 +243,14 @@ export default async function Home() {
             <h2 className="sectitle">Real people, real recoveries</h2>
           </Reveal>
           <div className="revgrid">
-            {REVIEWS.map((r) => (
-              <figure key={r.n} className="reveal revcard">
+            {reviews.map((r) => (
+              <figure key={r.id} className="reveal revcard">
                 <IconQuote width={40} height={40} className="revquote" />
-                <div className="revstars">{[0,1,2,3,4].map((s) => <IconStar key={s} width={16} height={16} />)}</div>
-                <blockquote>&ldquo;{r.q}&rdquo;</blockquote>
+                <div className="revstars">{Array.from({ length: r.rating }).map((_, s) => <IconStar key={s} width={16} height={16} />)}</div>
+                <blockquote>&ldquo;{r.quote}&rdquo;</blockquote>
                 <figcaption>
-                  <span className="revavatar grad-primary">{r.n.charAt(0)}</span>
-                  <div><strong>{r.n}</strong><span>{r.c} · {r.t}</span></div>
+                  <span className="revavatar grad-primary">{r.name.charAt(0)}</span>
+                  <div><strong>{r.name}</strong><span>{[r.country, r.resort].filter(Boolean).join(" · ")}</span></div>
                 </figcaption>
               </figure>
             ))}
@@ -264,7 +260,7 @@ export default async function Home() {
 
       <ConsultCta treatments={treatments.map((t) => t.name)} />
 
-      <Faq />
+      <Faq items={faqs} />
 
       <a href="/contact" aria-label="Chat with us" className="floatchat grad-primary anim-pulse-ring">
         <IconArrowRight width={0} height={0} style={{ display: "none" }} />

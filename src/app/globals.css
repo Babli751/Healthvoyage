@@ -1054,3 +1054,86 @@ img, video { max-width: 100%; height: auto; }
   .adash-grid { grid-template-columns: 1fr; }
   .apage-head h1 { font-size: 24px; }
 }
+
+/* ======================================================================
+   CMS additions: rich text, gallery, content forms, blog, post, SEO
+   ====================================================================== */
+/* Rich text editor */
+.rte { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; }
+.rte-bar { display: flex; flex-wrap: wrap; gap: 2px; padding: 6px; background: #fafbfe; border-bottom: 1px solid var(--border); }
+.rte-bar button { border: none; background: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; color: var(--text); font-family: inherit; }
+.rte-bar button:hover { background: var(--accent); color: var(--brand); }
+.rte-area { min-height: 160px; padding: 14px 16px; font-size: 15px; line-height: 1.6; outline: none; color: var(--text); }
+.rte-area:empty::before { content: "Write here…"; color: #aab3c2; }
+.rte-area h3 { font-size: 19px; margin: 10px 0 6px; }
+.rte-area ul, .rte-area ol { margin: 8px 0 8px 22px; }
+
+/* Gallery upload */
+.gup-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.gup-item { position: relative; width: 120px; height: 84px; border-radius: 9px; overflow: hidden; }
+.gup-x { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,.6); color: #fff; cursor: pointer; font-size: 15px; line-height: 1; }
+.gup-add { display: grid; place-items: center; width: 120px; height: 84px; border: 2px dashed var(--border); border-radius: 9px; cursor: pointer; font-size: 13px; color: var(--muted); text-align: center; }
+.gup-add:hover { border-color: var(--brand); color: var(--brand); }
+
+/* SEO collapsible */
+.admin-seo { border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; margin-bottom: 18px; }
+.admin-seo summary { cursor: pointer; font-weight: 600; font-size: 14px; padding: 6px 0; color: var(--muted); }
+.admin-seo[open] summary { margin-bottom: 10px; }
+
+/* Content forms (testimonials/faq inline) */
+.cform { display: flex; flex-direction: column; gap: 10px; }
+.cform-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.cform input, .cform textarea, .cform-row input { border: 1px solid var(--border); border-radius: 9px; padding: 9px 12px; font-family: inherit; font-size: 14px; color: var(--text); background: #fff; outline: none; }
+.cform input:focus, .cform textarea:focus { border-color: var(--brand); }
+.cform-row > input:not([type]) , .cform-row > input[type=text] { flex: 1; min-width: 140px; }
+.cform input[name=name], .cform input[name=question] { flex: 1; min-width: 180px; }
+.cform textarea { width: 100%; resize: vertical; }
+.cform-inline { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.cform-inline input[type=number] { width: 64px; }
+.clist { display: flex; flex-direction: column; gap: 12px; }
+.citem { background: #fff; border: 1px solid #eceff5; border-radius: 14px; padding: 16px; box-shadow: var(--shadow-soft); display: flex; gap: 14px; align-items: flex-start; }
+.citem .cform { flex: 1; }
+.cstars { display: inline-flex; gap: 1px; color: var(--gold); }
+.bcats { display: flex; flex-wrap: wrap; gap: 8px; }
+.bcat { background: var(--secondary); color: var(--brand-dark); font-size: 13px; font-weight: 500; padding: 5px 12px; border-radius: 999px; }
+
+/* Blog (public) */
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+.blogcard { display: flex; flex-direction: column; background: var(--surface); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-soft); transition: transform .3s, box-shadow .3s; }
+.blogcard:hover { transform: translateY(-5px); box-shadow: var(--shadow-elegant); }
+.blogcard-img { position: relative; height: 200px; overflow: hidden; }
+.blogcard-img img { transition: transform .6s; }
+.blogcard:hover .blogcard-img img { transform: scale(1.08); }
+.blogcard-cat { position: absolute; left: 12px; top: 12px; background: var(--surface); color: var(--brand-dark); font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 999px; }
+.blogcard-body { flex: 1; display: flex; flex-direction: column; padding: 20px; }
+.blogcard-body h3 { font-size: 18px; font-weight: 700; line-height: 1.3; }
+.blogcard-body p { font-size: 14px; color: var(--muted); margin-top: 8px; flex: 1; line-height: 1.55; }
+.blogcard-more { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-weight: 600; font-size: 14px; color: var(--brand); }
+.blogcard:hover .blogcard-more svg { transform: translateX(3px); }
+.blogcard-more svg { transition: transform .2s; }
+
+/* Blog post */
+.post-hero { position: relative; min-height: 340px; display: flex; align-items: flex-end; overflow: hidden; background: var(--navy); }
+.post-hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,30,58,.4), rgba(20,30,58,.85)); }
+.post-hero-inner { position: relative; z-index: 1; color: #fff; padding: 110px 0 32px; }
+.post-hero-inner h1 { color: #fff; font-size: clamp(28px, 4vw, 46px); max-width: 20ch; margin-top: 10px; }
+.post-date { color: rgba(255,255,255,.75); font-size: 14px; margin-top: 10px; }
+.post-body { max-width: 760px; padding-top: 44px; padding-bottom: 64px; }
+.post-content { font-size: 17px; line-height: 1.75; color: var(--text); }
+.post-content h3 { font-size: 24px; margin: 28px 0 10px; }
+.post-content p { margin-bottom: 16px; }
+.post-content ul, .post-content ol { margin: 0 0 16px 24px; }
+.post-content li { margin-bottom: 6px; }
+.post-content a { color: var(--brand); text-decoration: underline; }
+.post-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--border); }
+
+/* Detail gallery */
+.detail-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 24px 0 8px; max-width: 760px; }
+.detail-gallery-item { position: relative; aspect-ratio: 4/3; border-radius: 14px; overflow: hidden; }
+.desc.post-content { max-width: 760px; }
+
+@media (max-width: 680px) {
+  .blog-grid { grid-template-columns: 1fr; }
+  .citem { flex-direction: column; }
+  .post-hero-inner { padding-top: 100px; }
+}

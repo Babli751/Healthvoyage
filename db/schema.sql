@@ -28,8 +28,12 @@ CREATE TABLE sanatoriums (
   city        TEXT NOT NULL,
   stars       INT,
   summary     TEXT NOT NULL,
-  description TEXT NOT NULL,
-  image       TEXT, -- /img/<pexels-id>.jpg
+  description TEXT NOT NULL,      -- may contain simple HTML (rich editor)
+  image       TEXT,              -- primary cover image
+  gallery     JSONB NOT NULL DEFAULT '[]', -- extra image paths
+  meta_title       TEXT,
+  meta_description TEXT,
+  keywords         TEXT,
   country_id  INT NOT NULL REFERENCES countries(id) ON DELETE CASCADE,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -58,3 +62,50 @@ CREATE TABLE IF NOT EXISTS inquiries (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status, created_at DESC);
+
+-- Patient testimonials (shown on homepage, managed in admin)
+CREATE TABLE IF NOT EXISTS testimonials (
+  id         SERIAL PRIMARY KEY,
+  name       TEXT NOT NULL,
+  country    TEXT,
+  resort     TEXT,
+  quote      TEXT NOT NULL,
+  rating     INT NOT NULL DEFAULT 5,
+  published  BOOLEAN NOT NULL DEFAULT true,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- FAQ entries
+CREATE TABLE IF NOT EXISTS faqs (
+  id         SERIAL PRIMARY KEY,
+  question   TEXT NOT NULL,
+  answer     TEXT NOT NULL,
+  published  BOOLEAN NOT NULL DEFAULT true,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Blog categories
+CREATE TABLE IF NOT EXISTS blog_categories (
+  id   SERIAL PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  slug TEXT NOT NULL UNIQUE
+);
+
+-- Blog posts
+CREATE TABLE IF NOT EXISTS blog_posts (
+  id          SERIAL PRIMARY KEY,
+  title       TEXT NOT NULL,
+  slug        TEXT NOT NULL UNIQUE,
+  excerpt     TEXT,
+  body        TEXT NOT NULL,       -- rich HTML
+  cover       TEXT,
+  category_id INT REFERENCES blog_categories(id) ON DELETE SET NULL,
+  meta_title       TEXT,
+  meta_description TEXT,
+  keywords         TEXT,
+  published   BOOLEAN NOT NULL DEFAULT true,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_blog_published ON blog_posts(published, created_at DESC);

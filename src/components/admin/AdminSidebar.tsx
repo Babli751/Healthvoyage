@@ -4,13 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/admin/actions";
 import {
-  IconSearch, IconMapPin, IconBadge, IconMessage, IconArrowRight,
+  IconSearch, IconMapPin, IconBadge, IconMessage, IconArrowRight, IconStar, IconQuote,
 } from "@/components/Icon";
 
 const links = [
   { name: "Dashboard", href: "/admin", icon: IconBadge, exact: true },
   { name: "Sanatoriums", href: "/admin/sanatoriums", icon: IconMapPin },
   { name: "Inquiries", href: "/admin/inquiries", icon: IconMessage },
+  { name: "Testimonials", href: "/admin/testimonials", icon: IconQuote },
+  { name: "FAQ", href: "/admin/faq", icon: IconBadge },
+  { name: "Blog", href: "/admin/blog", icon: IconStar },
 ];
 
 export function AdminSidebar({ newInquiries = 0 }: { newInquiries?: number }) {

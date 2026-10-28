@@ -8,6 +8,7 @@ const links = [
   ["Sanatoriums", "/sanatoriums"],
   ["Destinations", "/destinations"],
   ["Treatments", "/treatments"],
+  ["Blog", "/blog"],
   ["About", "/about"],
   ["Contact", "/contact"],
 ];

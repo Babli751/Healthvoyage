@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { RichText } from "./RichText";
+import { GalleryUpload } from "./GalleryUpload";
 
 interface Country { id: number; name: string; flag: string | null }
 interface Treatment { id: number; name: string }
@@ -13,6 +15,7 @@ interface Props {
   initial?: {
     name: string; city: string; stars: number | null; summary: string;
     description: string; image: string | null; country_id: number; treatment_ids: number[];
+    gallery?: string[]; meta_title?: string | null; meta_description?: string | null; keywords?: string | null;
   };
   submitLabel: string;
 }
@@ -79,10 +82,10 @@ export function SanatoriumForm({ action, countries, treatments, initial, submitL
         <input name="summary" required defaultValue={initial?.summary} maxLength={200} />
       </label>
 
-      <label className="field">
+      <div className="field">
         <span>Full description *</span>
-        <textarea name="description" required rows={5} defaultValue={initial?.description} />
-      </label>
+        <RichText name="description" initial={initial?.description ?? ""} />
+      </div>
 
       <div className="field">
         <span>Image</span>
@@ -121,6 +124,27 @@ export function SanatoriumForm({ action, countries, treatments, initial, submitL
           ))}
         </div>
       </div>
+
+      <div className="field">
+        <span>Gallery images</span>
+        <GalleryUpload initial={initial?.gallery ?? []} />
+      </div>
+
+      <details className="admin-seo">
+        <summary>SEO settings (optional)</summary>
+        <label className="field">
+          <span>Meta title</span>
+          <input name="metaTitle" defaultValue={initial?.meta_title ?? ""} maxLength={70} />
+        </label>
+        <label className="field">
+          <span>Meta description</span>
+          <textarea name="metaDescription" rows={2} defaultValue={initial?.meta_description ?? ""} maxLength={180} />
+        </label>
+        <label className="field">
+          <span>Keywords (comma separated)</span>
+          <input name="keywords" defaultValue={initial?.keywords ?? ""} />
+        </label>
+      </details>
 
       <button className="btn" type="submit">{submitLabel}</button>
     </form>

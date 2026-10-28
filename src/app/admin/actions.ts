@@ -36,6 +36,10 @@ function parseInput(formData: FormData): SanatoriumInput {
     .getAll("treatments")
     .map((v) => Number(v))
     .filter((n) => Number.isFinite(n));
+  const gallery = formData
+    .getAll("gallery")
+    .map((v) => String(v).trim())
+    .filter(Boolean);
   return {
     name: String(formData.get("name") ?? "").trim(),
     city: String(formData.get("city") ?? "").trim(),
@@ -43,6 +47,10 @@ function parseInput(formData: FormData): SanatoriumInput {
     summary: String(formData.get("summary") ?? "").trim(),
     description: String(formData.get("description") ?? "").trim(),
     image: String(formData.get("image") ?? "").trim() || null,
+    gallery,
+    metaTitle: String(formData.get("metaTitle") ?? "").trim() || null,
+    metaDescription: String(formData.get("metaDescription") ?? "").trim() || null,
+    keywords: String(formData.get("keywords") ?? "").trim() || null,
     countryId: Number(formData.get("countryId")),
     treatmentIds,
   };

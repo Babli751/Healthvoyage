@@ -319,6 +319,47 @@ async function main() {
       console.log(`  ${c.name}: ${c.sanatoriums.length}`);
     }
 
+    // Seed testimonials / FAQ / blog ONLY if empty (don't clobber admin edits).
+    const { rows: tc } = await client.query<{ n: string }>("SELECT COUNT(*) n FROM testimonials");
+    if (Number(tc[0].n) === 0) {
+      const testimonials = [
+        ["Anna K.", "Germany", "Garabag Resort & Spa", "The coordinator answered every question within hours. My psoriasis improved more in 14 days of Naftalan than in years of creams.", 5],
+        ["Michael R.", "United Kingdom", "Premier Aqua, Serbia", "After knee surgery I needed serious rehab. The program was professional, the staff caring, and the price far below home.", 5],
+        ["Leyla M.", "Turkey", "Lopota Lake, Georgia", "Everything from the airport pickup to the doctor's schedule was handled. It felt like travelling with family.", 5],
+      ];
+      let o = 0;
+      for (const [name, country, resort, quote, rating] of testimonials) {
+        await client.query(
+          "INSERT INTO testimonials (name, country, resort, quote, rating, sort_order) VALUES ($1,$2,$3,$4,$5,$6)",
+          [name, country, resort, quote, rating, o++]
+        );
+      }
+      console.log(`  ${testimonials.length} testimonials`);
+    }
+
+    const { rows: fc } = await client.query<{ n: string }>("SELECT COUNT(*) n FROM faqs");
+    if (Number(fc[0].n) === 0) {
+      const faqs = [
+        ["Is the consultation really free?", "Yes. Our coordinators help you compare resorts, programs and prices at no cost. You pay the resort directly for your stay."],
+        ["How do I know which resort suits my condition?", "Share your diagnosis or medical notes. Our team checks suitability with the resort's doctors before you book."],
+        ["Do you help with visas and transfers?", "We prepare invitation letters where required and can organize airport transfers and local transport."],
+        ["How long is a typical treatment program?", "Most sanatorium programs run 10–21 days. Shorter wellness stays of 5–7 days are also available."],
+      ];
+      let o = 0;
+      for (const [q, a] of faqs) {
+        await client.query("INSERT INTO faqs (question, answer, sort_order) VALUES ($1,$2,$3)", [q, a, o++]);
+      }
+      console.log(`  ${faqs.length} faqs`);
+    }
+
+    const { rows: bc } = await client.query<{ n: string }>("SELECT COUNT(*) n FROM blog_categories");
+    if (Number(bc[0].n) === 0) {
+      for (const name of ["Balneology", "Rehabilitation", "Travel Tips"]) {
+        await client.query("INSERT INTO blog_categories (name, slug) VALUES ($1,$2)", [name, slugify(name)]);
+      }
+      console.log("  3 blog categories");
+    }
+
     await client.query("COMMIT");
     console.log(`Done. ${DATA.length} countries, ${sanatoriumCount} sanatoriums.`);
   } catch (e) {

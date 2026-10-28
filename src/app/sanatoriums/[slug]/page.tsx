@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/SiteNav";
 import Image from "next/image";
@@ -7,6 +8,17 @@ import { SanatoriumCard } from "@/components/SanatoriumCard";
 import { InquiryForm } from "@/components/InquiryForm";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const s = await getSanatoriumBySlug(slug);
+  if (!s) return { title: "Sanatorium — HealthVoyage" };
+  return {
+    title: s.meta_title || `${s.name} — ${s.city}, ${s.country_name} | HealthVoyage`,
+    description: s.meta_description || s.summary,
+    keywords: s.keywords || undefined,
+  };
+}
 
 export default async function SanatoriumDetail({
   params,
@@ -42,7 +54,17 @@ export default async function SanatoriumDetail({
 
       <section className="detail-body">
         <div className="container">
-          <p className="desc">{s.description}</p>
+          <div className="desc post-content" dangerouslySetInnerHTML={{ __html: s.description }} />
+
+          {s.gallery && s.gallery.length > 0 && (
+            <div className="detail-gallery">
+              {s.gallery.map((g) => (
+                <div key={g} className="detail-gallery-item">
+                  <Image src={g} alt={s.name} fill sizes="(max-width:768px) 50vw, 300px" style={{ objectFit: "cover" }} />
+                </div>
+              ))}
+            </div>
+          )}
 
           <h3>Treatment profile</h3>
           <div className="filters">
