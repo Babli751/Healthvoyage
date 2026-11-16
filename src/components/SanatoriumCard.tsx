@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { IconMapPin, IconStar, IconArrowRight } from "./Icon";
 
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function SanatoriumCard({ slug, name, city, country, flag, stars, summary, image, treatments }: Props) {
+  const t = useTranslations("common");
   return (
     <Link href={`/sanatoriums/${slug}`} className="reveal scard">
       <div className="scard-img">
@@ -32,8 +34,8 @@ export function SanatoriumCard({ slug, name, city, country, flag, stars, summary
           ))}
         </div>
         <div className="scard-foot">
-          <span>Free quote</span>
-          <span className="scard-more">View details <IconArrowRight width={15} height={15} /></span>
+          <span>{t("freeQuote")}</span>
+          <span className="scard-more">{t("viewDetails")} <IconArrowRight width={15} height={15} /></span>
         </div>
       </div>
     </Link>

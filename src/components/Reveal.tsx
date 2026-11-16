@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 // Global reveal: watches every .reveal element and adds .in when it scrolls
-// into view. Re-runs on every route change (layout doesn't remount on nav).
-// Respects reduced motion. Also exported as a wrapper component.
+// into view. Re-runs on every route change AND query-string change (filters on
+// /sanatoriums only change the query, not the path, so pathname alone misses
+// them and new cards would stay at opacity:0). Respects reduced motion.
 export function RevealManager() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
   useEffect(() => {
     const showAll = () =>
       document.querySelectorAll(".reveal:not(.in)").forEach((el) => el.classList.add("in"));
@@ -49,7 +52,7 @@ export function RevealManager() {
       io.disconnect();
       window.clearTimeout(failSafe);
     };
-  }, [pathname]);
+  }, [pathname, search]);
   return null;
 }
 

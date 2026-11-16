@@ -1,20 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { IconPhone, IconMenu, IconX } from "./Icon";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
-const links = [
-  ["Sanatoriums", "/sanatoriums"],
-  ["Destinations", "/destinations"],
-  ["Treatments", "/treatments"],
-  ["Blog", "/blog"],
-  ["About", "/about"],
-  ["Contact", "/contact"],
+const links: [string, string][] = [
+  ["nav.sanatoriums", "/sanatoriums"],
+  ["nav.destinations", "/destinations"],
+  ["nav.treatments", "/treatments"],
+  ["nav.blog", "/blog"],
+  ["nav.about", "/about"],
+  ["nav.contact", "/contact"],
 ];
 
 // transparent=true overlays a hero (home); it turns solid on scroll.
 export function SiteNav({ transparent = false }: { transparent?: boolean }) {
+  const t = useTranslations();
   const [scrolled, setScrolled] = useState(!transparent);
   const [open, setOpen] = useState(false);
 
@@ -30,21 +33,19 @@ export function SiteNav({ transparent = false }: { transparent?: boolean }) {
     <header className={`sitenav ${scrolled ? "sitenav-solid" : "sitenav-clear"}`}>
       <div className="sitenav-inner">
         <Link href="/" className="sitenav-logo" aria-label="HealthVoyage home">
-          <span className="sitenav-mark grad-primary">
-            <img src="/logo-icon.jpg" alt="" width={22} height={21} />
-          </span>
-          <span className="sitenav-word">Health<span>Voyage</span></span>
+          <img src="/logo.png" alt="HealthVoyage" className="sitenav-logo-img" />
         </Link>
 
         <nav className="sitenav-links">
-          {links.map(([label, href]) => (
-            <Link key={label} href={href} className="sitenav-link">{label}</Link>
+          {links.map(([key, href]) => (
+            <Link key={key} href={href} className="sitenav-link">{t(key)}</Link>
           ))}
         </nav>
 
         <div className="sitenav-cta">
-          <a href="/contact" className="sitenav-phone"><IconPhone width={16} height={16} /> 24/7 support</a>
-          <Link href="/contact" className="sitenav-btn grad-primary">Free consultation</Link>
+          <LanguageSwitcher />
+          <Link href="/contact" className="sitenav-phone"><IconPhone width={16} height={16} /> {t("nav.support")}</Link>
+          <Link href="/contact" className="sitenav-btn grad-primary">{t("nav.freeConsultation")}</Link>
         </div>
 
         <button className="sitenav-burger" aria-label="Menu" onClick={() => setOpen(!open)}>
@@ -54,10 +55,11 @@ export function SiteNav({ transparent = false }: { transparent?: boolean }) {
 
       {open && (
         <div className="sitenav-mobile">
-          {links.map(([label, href]) => (
-            <Link key={label} href={href} onClick={() => setOpen(false)}>{label}</Link>
+          {links.map(([key, href]) => (
+            <Link key={key} href={href} onClick={() => setOpen(false)}>{t(key)}</Link>
           ))}
-          <Link href="/contact" onClick={() => setOpen(false)} className="sitenav-btn grad-primary" style={{ marginTop: 8 }}>Free consultation</Link>
+          <div style={{ margin: "8px 0" }}><LanguageSwitcher /></div>
+          <Link href="/contact" onClick={() => setOpen(false)} className="sitenav-btn grad-primary" style={{ marginTop: 8 }}>{t("nav.freeConsultation")}</Link>
         </div>
       )}
     </header>

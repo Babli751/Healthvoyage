@@ -9,3 +9,6 @@ build
 next-env.d.ts
 .vercel
 .env*
+
+# Local ops doc with credentials — never push
+CLAUDE.md

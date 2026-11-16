@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { submitInquiry, type InquiryState } from "@/app/contact/actions";
+import { useTranslations } from "next-intl";
+import { submitInquiry, type InquiryState } from "@/app/[locale]/contact/actions";
 
 interface Props {
   sanatoriumId?: number;
@@ -10,14 +11,15 @@ interface Props {
 }
 
 export function InquiryForm({ sanatoriumId, sanatoriumName, compact }: Props) {
+  const t = useTranslations("form");
   const [state, action, pending] = useActionState<InquiryState | null, FormData>(submitInquiry, null);
 
   if (state?.ok) {
     return (
       <div className="inquiry-success">
         <div className="inquiry-success-icon">✓</div>
-        <h3>Thank you — we&apos;ve received your request.</h3>
-        <p>Our team will get back to you by email shortly{sanatoriumName ? ` about ${sanatoriumName}` : ""}.</p>
+        <h3>{t("successTitle")}</h3>
+        <p>{sanatoriumName ? t("successBodyResort", { name: sanatoriumName }) : t("successBody")}</p>
       </div>
     );
   }
@@ -32,39 +34,39 @@ export function InquiryForm({ sanatoriumId, sanatoriumName, compact }: Props) {
 
       <div className="inquiry-grid">
         <label className="field">
-          <span>Full name *</span>
+          <span>{t("fullName")}</span>
           <input name="name" required autoComplete="name" />
         </label>
         <label className="field">
-          <span>Email *</span>
+          <span>{t("email")}</span>
           <input type="email" name="email" required autoComplete="email" />
         </label>
         <label className="field">
-          <span>Phone / WhatsApp</span>
+          <span>{t("phone")}</span>
           <input name="phone" autoComplete="tel" />
         </label>
         <label className="field">
-          <span>Your country</span>
+          <span>{t("country")}</span>
           <input name="country" autoComplete="country-name" />
         </label>
       </div>
 
       <label className="field">
-        <span>How can we help? *</span>
+        <span>{t("help")}</span>
         <textarea
           name="message"
           required
           rows={compact ? 3 : 4}
-          placeholder={sanatoriumName ? `I'm interested in ${sanatoriumName}…` : "Describe your condition, preferred destination and dates…"}
+          placeholder={sanatoriumName ? t("placeholderResort", { name: sanatoriumName }) : t("placeholderGeneric")}
         />
       </label>
 
       {state?.error && <p className="form-error">{state.error}</p>}
 
       <button className="btn" type="submit" disabled={pending}>
-        {pending ? "Sending…" : "Request a free consultation"}
+        {pending ? t("sending") : t("submit")}
       </button>
-      <p className="inquiry-note">Free service. We&apos;ll never share your details with third parties.</p>
+      <p className="inquiry-note">{t("note")}</p>
     </form>
   );
 }

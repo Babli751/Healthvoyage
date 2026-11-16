@@ -1,10 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
-import { submitInquiry, type InquiryState } from "@/app/contact/actions";
+import { useTranslations } from "next-intl";
+import { submitInquiry, type InquiryState } from "@/app/[locale]/contact/actions";
 import { IconBadge, IconArrowRight } from "@/components/Icon";
 
 export function ConsultCta({ treatments }: { treatments: string[] }) {
+  const t = useTranslations("consult");
   const [state, action, pending] = useActionState<InquiryState | null, FormData>(submitInquiry, null);
 
   return (
@@ -12,10 +14,10 @@ export function ConsultCta({ treatments }: { treatments: string[] }) {
       <div className="reveal consult grad-primary">
         <div className="consult-orb" aria-hidden="true" />
         <div className="consult-left">
-          <h2 className="sectitle" style={{ color: "#fff" }}>Get a free personal treatment plan</h2>
-          <p>Tell us about your condition. A coordinator will reply within 24 hours with suitable resorts and prices.</p>
+          <h2 className="sectitle" style={{ color: "#fff" }}>{t("title")}</h2>
+          <p>{t("subtitle")}</p>
           <ul className="consult-list">
-            {["No obligation, 100% free", "Reply within 24 hours", "Your data stays confidential"].map((x) => (
+            {[t("b1"), t("b2"), t("b3")].map((x) => (
               <li key={x}><IconBadge width={20} height={20} /> {x}</li>
             ))}
           </ul>
@@ -25,25 +27,25 @@ export function ConsultCta({ treatments }: { treatments: string[] }) {
           {state?.ok ? (
             <div className="consult-done">
               <IconBadge width={52} height={52} />
-              <h3>Thank you!</h3>
-              <p>We&apos;ll be in touch shortly.</p>
+              <h3>{t("thanks")}</h3>
+              <p>{t("thanksSub")}</p>
             </div>
           ) : (
             <>
               <input type="text" name="company" tabIndex={-1} autoComplete="off" className="hp-field" aria-hidden="true" />
-              <input required name="name" placeholder="Full name" />
+              <input required name="name" placeholder={t("fullName")} />
               <div className="consult-row">
-                <input required type="email" name="email" placeholder="Email" />
-                <input name="phone" placeholder="Phone / WhatsApp" />
+                <input required type="email" name="email" placeholder={t("email")} />
+                <input name="phone" placeholder={t("phone")} />
               </div>
               <select name="country" defaultValue="">
-                <option value="">Treatment of interest</option>
-                {treatments.map((t) => <option key={t} value="">{t}</option>)}
+                <option value="">{t("treatmentOfInterest")}</option>
+                {treatments.map((tr) => <option key={tr} value="">{tr}</option>)}
               </select>
-              <textarea name="message" rows={3} placeholder="Describe your condition (optional)" defaultValue="Requesting a free treatment plan." />
+              <textarea name="message" rows={3} placeholder={t("describe")} defaultValue={t("defaultMsg")} />
               {state?.error && <p className="form-error">{state.error}</p>}
               <button className="consult-btn grad-primary" disabled={pending}>
-                {pending ? "Sending…" : <>Request free plan <IconArrowRight width={16} height={16} /></>}
+                {pending ? t("sending") : <>{t("submit")} <IconArrowRight width={16} height={16} /></>}
               </button>
             </>
           )}

@@ -1,5 +1,20 @@
 import { query, queryOne } from "./db";
 
+// --- i18n helpers ----------------------------------------------------------
+// Live site serves EN/RU/AZ. DB holds EN in the base column and translations
+// in <col>_ru / <col>_az. For a given locale we COALESCE the translated column
+// back to EN so a missing translation never shows blank.
+export type Locale = "en" | "ru" | "az";
+
+// Build `COALESCE(<prefix>.<col>_<loc>, <prefix>.<col>) AS <alias>` (or just the
+// base column for EN). `alias` defaults to the base column name.
+function tcol(col: string, locale: Locale, prefix = "", alias?: string): string {
+  const p = prefix ? `${prefix}.` : "";
+  const out = alias ?? col;
+  if (locale === "en") return `${p}${col} AS ${out}`;
+  return `COALESCE(${p}${col}_${locale}, ${p}${col}) AS ${out}`;
+}
+
 export interface Country {
   id: number;
   name: string;
@@ -44,12 +59,18 @@ export interface SanatoriumFull extends Sanatorium {
 }
 
 // Aggregate treatments[] via a correlated json subquery so each row is complete.
-const SANATORIUM_SELECT = `
-  SELECT s.id, s.name, s.slug, s.city, s.stars, s.summary, s.description, s.image,
+// Locale-aware: name/summary/description + country name + treatment names fall
+// back to EN when a translation is missing.
+function sanatoriumSelect(locale: Locale): string {
+  const tName = locale === "en" ? "t.name" : `COALESCE(t.name_${locale}, t.name)`;
+  const cName = locale === "en" ? "c.name" : `COALESCE(c.name_${locale}, c.name)`;
+  return `
+  SELECT s.id, ${tcol("name", locale, "s")}, s.slug, s.city, s.stars,
+         ${tcol("summary", locale, "s")}, ${tcol("description", locale, "s")}, s.image,
          COALESCE(s.gallery, '[]') AS gallery, s.meta_title, s.meta_description, s.keywords, s.country_id,
-         c.name AS country_name, c.slug AS country_slug, c.flag AS country_flag,
+         ${cName} AS country_name, c.slug AS country_slug, c.flag AS country_flag,
          COALESCE(
-           (SELECT json_agg(json_build_object('name', t.name, 'slug', t.slug) ORDER BY t.name)
+           (SELECT json_agg(json_build_object('name', ${tName}, 'slug', t.slug) ORDER BY t.name)
             FROM sanatorium_treatments st
             JOIN treatments t ON t.id = st.treatment_id
             WHERE st.sanatorium_id = s.id),
@@ -58,10 +79,12 @@ const SANATORIUM_SELECT = `
   FROM sanatoriums s
   JOIN countries c ON c.id = s.country_id
 `;
+}
 
-export function getCountriesWithCounts() {
+export function getCountriesWithCounts(locale: Locale = "en") {
   return query<Country & { count: number }>(`
-    SELECT c.*, COUNT(s.id)::int AS count
+    SELECT c.id, ${tcol("name", locale, "c")}, c.slug, c.flag, ${tcol("blurb", locale, "c")}, c.cover,
+           COUNT(s.id)::int AS count
     FROM countries c
     LEFT JOIN sanatoriums s ON s.country_id = c.id
     GROUP BY c.id
@@ -69,9 +92,16 @@ export function getCountriesWithCounts() {
   `);
 }
 
-export function getTreatmentsWithCounts() {
-  return query<Treatment & { count: number }>(`
-    SELECT t.*, COUNT(st.sanatorium_id)::int AS count
+export function getTreatmentsWithCounts(locale: Locale = "en") {
+  return query<Treatment & { count: number; image: string | null }>(`
+    SELECT t.id, ${tcol("name", locale, "t")}, t.slug, COUNT(st.sanatorium_id)::int AS count,
+      (SELECT s.image
+         FROM sanatorium_treatments st2
+         JOIN sanatoriums s ON s.id = st2.sanatorium_id
+        WHERE st2.treatment_id = t.id AND s.image IS NOT NULL
+        -- vary the picked resort per treatment so cards don't repeat the same photo
+        ORDER BY (s.id + t.id) % 7, s.stars DESC NULLS LAST, s.id DESC
+        LIMIT 1) AS image
     FROM treatments t
     LEFT JOIN sanatorium_treatments st ON st.treatment_id = t.id
     GROUP BY t.id
@@ -89,22 +119,22 @@ export async function countTreatments(): Promise<number> {
   return r?.count ?? 0;
 }
 
-export function getFeaturedSanatoriums(limit = 6) {
-  return query<SanatoriumFull>(`${SANATORIUM_SELECT} ORDER BY s.id ASC LIMIT $1`, [limit]);
+export function getFeaturedSanatoriums(limit = 6, locale: Locale = "en") {
+  return query<SanatoriumFull>(`${sanatoriumSelect(locale)} ORDER BY s.id ASC LIMIT $1`, [limit]);
 }
 
 // "Top Choice" — highest-rated resorts across destinations.
-export function getTopChoiceSanatoriums(limit = 4) {
+export function getTopChoiceSanatoriums(limit = 4, locale: Locale = "en") {
   return query<SanatoriumFull>(
-    `${SANATORIUM_SELECT} WHERE s.stars = 5 ORDER BY RANDOM() LIMIT $1`,
+    `${sanatoriumSelect(locale)} WHERE s.stars = 5 ORDER BY RANDOM() LIMIT $1`,
     [limit]
   );
 }
 
 // Resorts for a given treatment slug (themed showcase).
-export function getSanatoriumsByTreatment(slug: string, limit = 4) {
+export function getSanatoriumsByTreatment(slug: string, limit = 4, locale: Locale = "en") {
   return query<SanatoriumFull>(
-    `${SANATORIUM_SELECT}
+    `${sanatoriumSelect(locale)}
      WHERE EXISTS (SELECT 1 FROM sanatorium_treatments st
                    JOIN treatments t ON t.id = st.treatment_id
                    WHERE st.sanatorium_id = s.id AND t.slug = $1)
@@ -113,21 +143,28 @@ export function getSanatoriumsByTreatment(slug: string, limit = 4) {
   );
 }
 
-export function getCountryBySlug(slug: string) {
-  return queryOne<Country>(`SELECT * FROM countries WHERE slug = $1`, [slug]);
+export function getCountryBySlug(slug: string, locale: Locale = "en") {
+  return queryOne<Country>(
+    `SELECT id, ${tcol("name", locale)}, slug, flag, ${tcol("blurb", locale)}, cover
+     FROM countries WHERE slug = $1`,
+    [slug]
+  );
 }
 
-export function getTreatmentBySlug(slug: string) {
-  return queryOne<Treatment>(`SELECT * FROM treatments WHERE slug = $1`, [slug]);
+export function getTreatmentBySlug(slug: string, locale: Locale = "en") {
+  return queryOne<Treatment>(
+    `SELECT id, ${tcol("name", locale)}, slug FROM treatments WHERE slug = $1`,
+    [slug]
+  );
 }
 
-export function getSanatoriumBySlug(slug: string) {
-  return queryOne<SanatoriumFull>(`${SANATORIUM_SELECT} WHERE s.slug = $1`, [slug]);
+export function getSanatoriumBySlug(slug: string, locale: Locale = "en") {
+  return queryOne<SanatoriumFull>(`${sanatoriumSelect(locale)} WHERE s.slug = $1`, [slug]);
 }
 
-export function getRelatedSanatoriums(countryId: number, excludeId: number, limit = 4) {
+export function getRelatedSanatoriums(countryId: number, excludeId: number, limit = 4, locale: Locale = "en") {
   return query<SanatoriumFull>(
-    `${SANATORIUM_SELECT} WHERE s.country_id = $1 AND s.id <> $2 ORDER BY s.id ASC LIMIT $3`,
+    `${sanatoriumSelect(locale)} WHERE s.country_id = $1 AND s.id <> $2 ORDER BY s.id ASC LIMIT $3`,
     [countryId, excludeId, limit]
   );
 }
@@ -137,7 +174,9 @@ export function searchSanatoriums(opts: {
   country?: string;
   treatment?: string;
   q?: string;
+  locale?: Locale;
 }) {
+  const locale = opts.locale ?? "en";
   const conditions: string[] = [];
   const params: unknown[] = [];
 
@@ -167,17 +206,22 @@ export function searchSanatoriums(opts: {
 
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   return query<SanatoriumFull>(
-    `${SANATORIUM_SELECT} ${where} ORDER BY c.name ASC, s.stars DESC NULLS LAST, s.name ASC`,
+    `${sanatoriumSelect(locale)} ${where} ORDER BY c.name ASC, s.stars DESC NULLS LAST, s.name ASC`,
     params
   );
 }
 
-export function getCountries() {
-  return query<Country>(`SELECT * FROM countries ORDER BY name ASC`);
+export function getCountries(locale: Locale = "en") {
+  return query<Country>(
+    `SELECT id, ${tcol("name", locale)}, slug, flag, ${tcol("blurb", locale)}, cover
+     FROM countries ORDER BY name ASC`
+  );
 }
 
-export function getTreatments() {
-  return query<Treatment>(`SELECT * FROM treatments ORDER BY name ASC`);
+export function getTreatments(locale: Locale = "en") {
+  return query<Treatment>(
+    `SELECT id, ${tcol("name", locale)}, slug FROM treatments ORDER BY name ASC`
+  );
 }
 
 // --- Admin writes ----------------------------------------------------------
@@ -252,7 +296,7 @@ export async function deleteSanatorium(id: number): Promise<void> {
 }
 
 export async function getSanatoriumById(id: number) {
-  const row = await queryOne<SanatoriumFull>(`${SANATORIUM_SELECT} WHERE s.id = $1`, [id]);
+  const row = await queryOne<SanatoriumFull>(`${sanatoriumSelect("en")} WHERE s.id = $1`, [id]);
   if (!row) return null;
   const ids = await query<{ treatment_id: number }>(
     `SELECT treatment_id FROM sanatorium_treatments WHERE sanatorium_id = $1`,
@@ -263,7 +307,7 @@ export async function getSanatoriumById(id: number) {
 
 // Full admin list (all sanatoriums, lightweight).
 export function getAllSanatoriumsAdmin() {
-  return query<SanatoriumFull>(`${SANATORIUM_SELECT} ORDER BY c.name ASC, s.name ASC`);
+  return query<SanatoriumFull>(`${sanatoriumSelect("en")} ORDER BY c.name ASC, s.name ASC`);
 }
 
 // --- Inquiries -------------------------------------------------------------
@@ -332,9 +376,10 @@ export interface Testimonial {
   id: number; name: string; country: string | null; resort: string | null;
   quote: string; rating: number; published: boolean; sort_order: number;
 }
-export function getTestimonials(onlyPublished = false) {
+export function getTestimonials(onlyPublished = false, locale: Locale = "en") {
   return query<Testimonial>(
-    `SELECT * FROM testimonials ${onlyPublished ? "WHERE published = true" : ""} ORDER BY sort_order ASC, id ASC`
+    `SELECT id, name, country, resort, ${tcol("quote", locale)}, rating, published, sort_order
+     FROM testimonials ${onlyPublished ? "WHERE published = true" : ""} ORDER BY sort_order ASC, id ASC`
   );
 }
 export function getTestimonialById(id: number) {
@@ -361,9 +406,10 @@ export async function deleteTestimonial(id: number) {
 export interface Faq {
   id: number; question: string; answer: string; published: boolean; sort_order: number;
 }
-export function getFaqs(onlyPublished = false) {
+export function getFaqs(onlyPublished = false, locale: Locale = "en") {
   return query<Faq>(
-    `SELECT * FROM faqs ${onlyPublished ? "WHERE published = true" : ""} ORDER BY sort_order ASC, id ASC`
+    `SELECT id, ${tcol("question", locale)}, ${tcol("answer", locale)}, published, sort_order
+     FROM faqs ${onlyPublished ? "WHERE published = true" : ""} ORDER BY sort_order ASC, id ASC`
   );
 }
 export function getFaqById(id: number) {
@@ -390,20 +436,28 @@ export interface BlogPost {
 }
 export interface BlogPostFull extends BlogPost { category_name: string | null; category_slug: string | null }
 
-export function getBlogCategories() {
-  return query<BlogCategory>(`SELECT * FROM blog_categories ORDER BY name ASC`);
+export function getBlogCategories(locale: Locale = "en") {
+  return query<BlogCategory>(
+    `SELECT id, ${tcol("name", locale)}, slug FROM blog_categories ORDER BY name ASC`
+  );
 }
-const BLOG_SELECT = `
-  SELECT p.*, c.name AS category_name, c.slug AS category_slug
+function blogSelect(locale: Locale): string {
+  const cName = locale === "en" ? "c.name" : `COALESCE(c.name_${locale}, c.name)`;
+  return `
+  SELECT p.id, ${tcol("title", locale, "p")}, p.slug, ${tcol("excerpt", locale, "p")},
+         ${tcol("body", locale, "p")}, p.cover, p.category_id, p.meta_title, p.meta_description,
+         p.keywords, p.published, p.created_at,
+         ${cName} AS category_name, c.slug AS category_slug
   FROM blog_posts p LEFT JOIN blog_categories c ON c.id = p.category_id`;
-export function getBlogPosts(onlyPublished = false) {
-  return query<BlogPostFull>(`${BLOG_SELECT} ${onlyPublished ? "WHERE p.published = true" : ""} ORDER BY p.created_at DESC`);
 }
-export function getBlogPostBySlug(slug: string) {
-  return queryOne<BlogPostFull>(`${BLOG_SELECT} WHERE p.slug = $1`, [slug]);
+export function getBlogPosts(onlyPublished = false, locale: Locale = "en") {
+  return query<BlogPostFull>(`${blogSelect(locale)} ${onlyPublished ? "WHERE p.published = true" : ""} ORDER BY p.created_at DESC`);
+}
+export function getBlogPostBySlug(slug: string, locale: Locale = "en") {
+  return queryOne<BlogPostFull>(`${blogSelect(locale)} WHERE p.slug = $1`, [slug]);
 }
 export function getBlogPostById(id: number) {
-  return queryOne<BlogPostFull>(`${BLOG_SELECT} WHERE p.id = $1`, [id]);
+  return queryOne<BlogPostFull>(`${blogSelect("en")} WHERE p.id = $1`, [id]);
 }
 export interface BlogInput {
   title: string; excerpt: string | null; body: string; cover: string | null;

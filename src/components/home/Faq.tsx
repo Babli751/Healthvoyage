@@ -1,14 +1,16 @@
+import { useTranslations } from "next-intl";
 import { IconChevron } from "@/components/Icon";
 
 interface FaqItem { id: number; question: string; answer: string }
 
 export function Faq({ items }: { items: FaqItem[] }) {
+  const t = useTranslations("home");
   if (!items.length) return null;
   return (
     <section className="container sec-faq">
       <div className="sechead sechead-center">
-        <span className="eyebrow">FAQ</span>
-        <h2 className="sectitle">Questions, answered</h2>
+        <span className="eyebrow">{t("faqKicker")}</span>
+        <h2 className="sectitle">{t("faqTitle")}</h2>
       </div>
       <div className="faq-list">
         {items.map((f, i) => (

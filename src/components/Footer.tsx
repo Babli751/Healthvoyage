@@ -1,33 +1,33 @@
-import Link from "next/link";
-import Image from "next/image";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/routing";
 
-export function Footer() {
+export async function Footer() {
+  const t = await getTranslations();
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
           <div className="footer-logo-row">
-            <Image src="/logo-icon.jpg" alt="" width={100} height={94} className="footer-logo-icon" />
-            <span className="footer-logo-text">Health<span>Voyage</span></span>
+            <img src="/logo.png" alt="HealthVoyage" className="footer-logo-img" />
           </div>
-          <p>Medical tourism &amp; sanatorium booking — clinics, hospitals and health resorts across the region.</p>
+          <p>{t("footer.tagline")}</p>
         </div>
         <div className="footer-col">
-          <h4>Explore</h4>
-          <Link href="/sanatoriums">All sanatoriums</Link>
-          <Link href="/destinations">Destinations</Link>
-          <Link href="/treatments">Treatments</Link>
-          <Link href="/blog">Blog</Link>
+          <h4>{t("footer.explore")}</h4>
+          <Link href="/sanatoriums">{t("nav.sanatoriums")}</Link>
+          <Link href="/destinations">{t("nav.destinations")}</Link>
+          <Link href="/treatments">{t("nav.treatments")}</Link>
+          <Link href="/blog">{t("nav.blog")}</Link>
         </div>
         <div className="footer-col">
-          <h4>Company</h4>
-          <Link href="/about">About us</Link>
-          <Link href="/contact">Contact</Link>
+          <h4>{t("footer.company")}</h4>
+          <Link href="/about">{t("nav.about")}</Link>
+          <Link href="/contact">{t("nav.contact")}</Link>
           <a href="mailto:info@healthvoyage.com">info@healthvoyage.com</a>
         </div>
       </div>
       <div className="container footer-bottom">
-        © {new Date().getFullYear()} HealthVoyage. For international patients.
+        © {new Date().getFullYear()} HealthVoyage. {t("footer.rights")}
       </div>
     </footer>
   );

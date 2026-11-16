@@ -1,0 +1,20 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3b7ce8"/>
+      <stop offset="1" stop-color="#2456b8"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="30" y1="30" x2="90" y2="96" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f1c35e"/>
+      <stop offset="1" stop-color="#d9962f"/>
+    </linearGradient>
+  </defs>
+  <!-- rounded square badge -->
+  <rect width="120" height="120" rx="30" fill="url(#bg)"/>
+  <!-- subtle inner glow -->
+  <rect x="4" y="4" width="112" height="112" rx="27" fill="none" stroke="#ffffff" stroke-opacity="0.12" stroke-width="2"/>
+  <!-- location pin (voyage) in gold, enclosing a medical cross (health) -->
+  <path d="M60 24c-14.4 0-26 11.3-26 25.3 0 17.8 22.1 42.4 24.4 44.9a2.2 2.2 0 0 0 3.2 0c2.3-2.5 24.4-27.1 24.4-44.9C86 35.3 74.4 24 60 24z" fill="url(#gold)"/>
+  <!-- white medical cross inside the pin head -->
+  <path d="M55.2 37.5h9.6v8.1h8.1v9.6h-8.1v8.1h-9.6v-8.1h-8.1v-9.6h8.1z" fill="#ffffff"/>
+</svg>

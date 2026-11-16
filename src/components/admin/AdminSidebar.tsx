@@ -25,7 +25,6 @@ export function AdminSidebar({ newInquiries = 0 }: { newInquiries?: number }) {
   return (
     <aside className="asb">
       <div className="asb-head">
-        <span className="asb-mark grad-primary"><img src="/logo-icon.jpg" alt="" width={20} height={19} /></span>
         <div>
           <div className="asb-title">HealthVoyage</div>
           <div className="asb-sub">Admin panel</div>
