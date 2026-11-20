@@ -6,8 +6,10 @@
     "blog": "Bloq",
     "about": "Haqqımızda",
     "contact": "Əlaqə",
-    "support": "24/7 dəstək",
+    "support": "24/7 tibbi məsləhətçi",
     "freeConsultation": "Pulsuz konsultasiya",
+    "licensed": "Səhiyyə Nazirliyi lisenziyalı",
+    "replyIn": "~4 dəq-də cavab",
     "home": "Ana səhifə"
   },
   "common": {
@@ -28,7 +30,8 @@
     "viewDetails": "Ətraflı bax"
   },
   "home": {
-    "heroBadge": "40+ ölkədən pasiyentlər bizə etibar edir",
+    "heroBadge": "Etibarlı tibbi sağlamlıq",
+    "verifiedStays": "təsdiqlənmiş rəy",
     "heroTitle1": "Dünya səviyyəli müalicə və bərpa,",
     "heroTitle2": "evinizə yaxın.",
     "heroSub": "Etibarlı sanatoriyaları, klinikaları və sağlamlıq kurortlarını müqayisə edin — Naftalan neft terapiyasından termal balneologiya və reabilitasiyaya qədər.",

@@ -6,8 +6,10 @@
     "blog": "Blog",
     "about": "About",
     "contact": "Contact",
-    "support": "24/7 support",
+    "support": "24/7 medical advisor",
     "freeConsultation": "Free consultation",
+    "licensed": "Ministry of Health licensed",
+    "replyIn": "Reply in ~4 min",
     "home": "Home"
   },
   "common": {
@@ -28,7 +30,8 @@
     "viewDetails": "View details"
   },
   "home": {
-    "heroBadge": "Trusted by patients from 40+ countries",
+    "heroBadge": "Trusted medical wellness",
+    "verifiedStays": "verified stays",
     "heroTitle1": "World-class treatment & recovery,",
     "heroTitle2": "close to home.",
     "heroSub": "Compare trusted sanatoriums, clinics and health resorts — from Naftalan oil therapy to thermal balneology and rehabilitation.",

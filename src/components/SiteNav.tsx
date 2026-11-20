@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { IconPhone, IconMenu, IconX } from "./Icon";
+import { IconMenu, IconX } from "./Icon";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 const links: [string, string][] = [
@@ -15,22 +15,21 @@ const links: [string, string][] = [
   ["nav.contact", "/contact"],
 ];
 
-// transparent=true overlays a hero (home); it turns solid on scroll.
-export function SiteNav({ transparent = false }: { transparent?: boolean }) {
+export function SiteNav(_props: { transparent?: boolean } = {}) {
   const t = useTranslations();
-  const [scrolled, setScrolled] = useState(!transparent);
+  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!transparent) return;
-    const f = () => setScrolled(window.scrollY > 40);
+    const f = () => setScrolled(window.scrollY > 20);
     f();
     window.addEventListener("scroll", f, { passive: true });
     return () => window.removeEventListener("scroll", f);
-  }, [transparent]);
+  }, []);
 
   return (
-    <header className={`sitenav ${scrolled ? "sitenav-solid" : "sitenav-clear"}`}>
+    <header className={`sitenav sitenav-light ${scrolled ? "sitenav-shadow" : ""}`}>
+      {/* main bar */}
       <div className="sitenav-inner">
         <Link href="/" className="sitenav-logo" aria-label="HealthVoyage home">
           <img src="/logo.png" alt="HealthVoyage" className="sitenav-logo-img" />
@@ -44,7 +43,6 @@ export function SiteNav({ transparent = false }: { transparent?: boolean }) {
 
         <div className="sitenav-cta">
           <LanguageSwitcher />
-          <Link href="/contact" className="sitenav-phone"><IconPhone width={16} height={16} /> {t("nav.support")}</Link>
           <Link href="/contact" className="sitenav-btn grad-primary">{t("nav.freeConsultation")}</Link>
         </div>
 

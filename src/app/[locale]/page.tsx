@@ -4,14 +4,13 @@ import { Link } from "@/i18n/routing";
 import type { Locale } from "@/lib/queries";
 import { SiteNav } from "@/components/SiteNav";
 import { Reveal } from "@/components/Reveal";
-import { CountUp } from "@/components/CountUp";
-import { HeroStats } from "@/components/home/HeroStats";
 import { Marquee } from "@/components/home/Marquee";
 import { HeroSearch } from "@/components/home/HeroSearch";
+import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { Faq } from "@/components/home/Faq";
 import { ConsultCta } from "@/components/home/ConsultCta";
 import {
-  IconSearch, IconMapPin, IconStar, IconArrowRight, IconShield, IconHeadphones,
+  IconMapPin, IconStar, IconArrowRight, IconShield, IconHeadphones,
   IconBadge, IconPlane, IconQuote, IconHeart,
 } from "@/components/Icon";
 import {
@@ -53,32 +52,39 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     <main>
       <SiteNav transparent />
 
-      {/* HERO */}
-      <section className="hero2">
-        <div className="hero2-bg anim-ken-burns" aria-hidden="true" />
-        <div className="hero2-overlay" aria-hidden="true" />
-        <div className="hero2-inner container">
-          <h1 className="hero2-title">
-            {t("home.heroTitle1")} <span className="text-gradient" style={{ fontStyle: "italic" }}>{t("home.heroTitle2")}</span>
-          </h1>
-          <p className="hero2-sub">
-            {t("home.heroSub")}
-          </p>
+      {/* HERO — full-bleed carousel background */}
+      <section className="hero3 hero3-bgmode">
+        <HeroCarousel fullBleed />
+        <div className="hero3-scrim" aria-hidden="true" />
+        <div className="container hero3-inner">
+          <div className="hero3-copy">
+            <span className="hero3-badge"><IconShield width={16} height={16} /> {t("home.heroBadge")}</span>
+            <h1 className="hero3-title">
+              {t("home.heroTitle1")} <span className="hero3-accent">{t("home.heroTitle2")}</span>
+            </h1>
+            <p className="hero3-sub">{t("home.heroSub")}</p>
 
-          <HeroSearch
-            action={`${locale === "en" ? "" : "/" + locale}/sanatoriums`}
-            treatments={treatments.map((tr) => ({ value: tr.slug, label: tr.name }))}
-            countries={countries.map((c) => ({ value: c.slug, label: `${c.flag} ${c.name}` }))}
-          />
+            <HeroSearch
+              action={`${locale === "en" ? "" : "/" + locale}/sanatoriums`}
+              treatments={treatments.map((tr) => ({ value: tr.slug, label: tr.name }))}
+              countries={countries.map((c) => ({ value: c.slug, label: `${c.flag} ${c.name}` }))}
+            />
 
-          <div className="hero2-popular">
-            <span>{t("home.heroPopular")}</span>
-            {[t("home.chip1"), t("home.chip2"), t("home.chip3"), t("home.chip4")].map((p) => (
-              <Link key={p} href="/treatments" className="glass hero2-chip">{p}</Link>
-            ))}
+            <div className="hero3-popular">
+              <span>{t("home.heroPopular")}</span>
+              {[t("home.chip1"), t("home.chip2"), t("home.chip3"), t("home.chip4")].map((p) => (
+                <Link key={p} href="/treatments" className="hero3-chip">{p}</Link>
+              ))}
+            </div>
+
+            <div className="hero3-rating anim-float">
+              <span className="hero3-rating-ic"><IconStar width={20} height={20} /></span>
+              <div>
+                <strong>4.9 / 5</strong>
+                <span>1,284 {t("home.verifiedStays")}</span>
+              </div>
+            </div>
           </div>
-
-          <HeroStats totalSan={totalSan} countries={countries.length} treatments={treatments.length} />
         </div>
       </section>
 
